@@ -72,3 +72,18 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+
+
+# Megascan Assets
+Content/Megascans/*
+
+# External Assets
+Content/AnimalVarietyPack
+Content/EchoContent
+
+# Large Meshes
+Content/Meshes/*
+
+# Don't ignore source binary files for designers
+!Binaries/**
