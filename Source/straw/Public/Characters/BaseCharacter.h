@@ -8,7 +8,7 @@
 
 class USpringArmComponent;
 class UCameraComponent;
-class ULineDrawingComponent;
+class UDrawingAbilityComponent;
 
 UCLASS()
 class STRAW_API ABaseCharacter : public ACharacter
@@ -20,13 +20,20 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	FVector GetCameraForwardVector(FRotator* OutCameraRotation = nullptr, bool bIncludePitch = false) const;
+
 protected:
 	virtual void BeginPlay() override;
 
+	/* 캐릭터 이동 관련 */
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 	void Turn(float Value);
 	void LookUp(float Value);
+
+	/* 능력 사용 관련 */
+	void ReadyAbility();
+	void EndReadyAbility();
 	void UseAbility();
 	void EndUseAbility();
 
@@ -38,7 +45,10 @@ private:
 	UCameraComponent* ViewCamera;
 
 	UPROPERTY(VisibleAnywhere)
-	ULineDrawingComponent* LineDrawingComponent;
+	UDrawingAbilityComponent* DrawingAbilityComponent;
 
+	bool bReadyAbility = false;
 	bool bUsingAbility = false;
+
+	float OriginTargetArmLength;
 };

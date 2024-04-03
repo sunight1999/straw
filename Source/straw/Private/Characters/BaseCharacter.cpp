@@ -5,7 +5,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
-#include "Abilities/LineDrawingComponent.h"
+#include "Abilities/DrawingAbilityComponent.h"
+#include "Math/StrawTriangle.h"
 
 ABaseCharacter::ABaseCharacter()
 {
@@ -23,7 +24,7 @@ ABaseCharacter::ABaseCharacter()
 	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
 	ViewCamera->SetupAttachment(CameraArm);
 
-	LineDrawingComponent = CreateDefaultSubobject<ULineDrawingComponent>(TEXT("LineDrawing"));
+	DrawingAbilityComponent = CreateDefaultSubobject<UDrawingAbilityComponent>(TEXT("DrawingAbilityComponent"));
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;	// 캐릭터를 움직이고 있는 방향으로 회전
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 400.f, 0.f);
@@ -32,27 +33,15 @@ ABaseCharacter::ABaseCharacter()
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	/*
-	LineDrawingComponent->StartDrawing();
-	LineDrawingComponent->AddPoint(GetActorLocation() + GetActorForwardVector() * 100.f);
-	LineDrawingComponent->AddPoint(GetActorLocation() + GetActorForwardVector() * 200.f);
-	LineDrawingComponent->AddPoint(GetActorLocation() + GetActorForwardVector() * 200.f + GetActorRightVector() * 100.f);
-	LineDrawingComponent->EndDrawing();
-	*/
 }
 
 void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bUsingAbility)
+	if (bReadyAbility && bUsingAbility)
 	{
-		const FVector ControlForward = FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X);
-		LineDrawingComponent->AddPoint(GetActorLocation() + ControlForward * 200.f);
-
-		//UE_LOG(LogTemp, Display, TEXT("ControlForward=%f.%f.%f"), ControlForward.X, ControlForward.Y, ControlForward.Z);
-		//DrawDebugSphere(GetWorld(), GetActorLocation() + ControlForward * 200.f, 10, 16, FColor::Red, true);
+		DrawingAbilityComponent->AddPoint();
 	}
 }
 
@@ -65,19 +54,37 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAxis(FName("LookUp"), this, &ABaseCharacter::LookUp);
 	PlayerInputComponent->BindAxis(FName("MoveRight"), this, &ABaseCharacter::MoveRight);
 
+	PlayerInputComponent->BindAction(FName("ReadyAbility"), IE_Pressed, this, &ABaseCharacter::ReadyAbility);
+	PlayerInputComponent->BindAction(FName("ReadyAbility"), IE_Released, this, &ABaseCharacter::EndReadyAbility);
 	PlayerInputComponent->BindAction(FName("UseAbility"), IE_Pressed, this, &ABaseCharacter::UseAbility);
 	PlayerInputComponent->BindAction(FName("UseAbility"), IE_Released, this, &ABaseCharacter::EndUseAbility);
+}
+
+FVector ABaseCharacter::GetCameraForwardVector(FRotator* OutCameraRotation, bool bIncludePitch) const
+{
+	const FRotator ControlRotation = GetControlRotation();
+	FRotator Rotation(ControlRotation);
+	if (!bIncludePitch)
+	{
+		Rotation.Pitch = 0.f;
+	}
+	
+	const FVector Direction = FRotationMatrix(Rotation).GetUnitAxis(EAxis::X);
+
+	if (OutCameraRotation)
+	{
+		*OutCameraRotation = ControlRotation;
+	}
+
+	return Direction;
 }
 
 void ABaseCharacter::MoveForward(float Value)
 {
 	if (Controller && (Value != 0.f))
 	{
-		const FRotator ControlRotation = GetControlRotation();
-		const FRotator YawRotation(0.f, ControlRotation.Yaw, 0.f);
 
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		AddMovementInput(Direction, Value);
+		AddMovementInput(GetCameraForwardVector(), Value);
 	}
 }
 
@@ -103,15 +110,62 @@ void ABaseCharacter::LookUp(float Value)
 	AddControllerPitchInput(Value);
 }
 
+void ABaseCharacter::ReadyAbility()
+{
+	
+
+	if (!bReadyAbility)
+	{
+		GetMesh()->SetVisibility(false);
+		OriginTargetArmLength = CameraArm->TargetArmLength;
+		CameraArm->TargetArmLength = 0.f;
+
+		/* Triagulator 테스트용
+		StrawTriangle Tri(FVector2D(0, 1), FVector2D(3, 1), FVector2D(3, -1));
+		FVector2D CircumCenter = Tri.GetCircumcircleCenter();
+		DrawDebugCircle(GetWorld(), FVector(0, CircumCenter.X, CircumCenter.Y), sqrt(Tri.GetSquaredCircumcircleRadius()), 50, FColor::Green, true);
+		DrawDebugPoint(GetWorld(), FVector(0, CircumCenter.X, CircumCenter.Y), 4, FColor::Black, true);
+		DrawDebugPoint(GetWorld(), FVector(0, 0, 1), 4, FColor::Black, true);
+		DrawDebugPoint(GetWorld(), FVector(0, 3, 1), 4, FColor::Black, true);
+		DrawDebugPoint(GetWorld(), FVector(0, 3, -1), 4, FColor::Black, true);
+		*/
+	}
+
+	bReadyAbility = true;
+}
+
+void ABaseCharacter::EndReadyAbility()
+{
+	if (bUsingAbility)
+	{
+		EndUseAbility();
+	}
+
+	bReadyAbility = false;
+
+	GetMesh()->SetVisibility(true);
+	CameraArm->TargetArmLength = OriginTargetArmLength;
+}
+
 void ABaseCharacter::UseAbility()
 {
+	if (!bReadyAbility)
+	{
+		return;
+	}
+
 	bUsingAbility = true;
-	LineDrawingComponent->StartDrawing();
+	DrawingAbilityComponent->StartDrawing();
 }
 
 void ABaseCharacter::EndUseAbility()
 {
+	if (!bReadyAbility)
+	{
+		return;
+	}
+
 	bUsingAbility = false;
-	LineDrawingComponent->EndDrawing();
+	DrawingAbilityComponent->EndDrawing();
 }
 
