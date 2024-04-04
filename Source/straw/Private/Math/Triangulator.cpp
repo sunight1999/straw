@@ -2,6 +2,7 @@
 
 
 #include "Math/Triangulator.h"
+#include "Math/StrawTriangle.h"
 
 Triangulator::Triangulator()
 {
