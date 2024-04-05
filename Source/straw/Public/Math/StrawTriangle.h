@@ -20,6 +20,10 @@ public:
 	bool IsTriangleContainingPoint(FVector2D P) const;
 	bool IsCircumcircleContainingPoint(FVector2D P) const;
 
+	FVector2D GetP1() const { return P1; }
+	FVector2D GetP2() const { return P2; }
+	FVector2D GetP3() const { return P3; }
+
 private:
 	FVector2D P1;
 	FVector2D P2;

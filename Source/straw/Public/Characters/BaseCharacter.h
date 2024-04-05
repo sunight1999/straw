@@ -44,7 +44,7 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* ViewCamera;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta=(AllowPrivateAccess="true"))
 	UDrawingAbilityComponent* DrawingAbilityComponent;
 
 	bool bReadyAbility = false;

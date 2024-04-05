@@ -4,6 +4,8 @@
 #include "Abilities/DrawingActualizer.h"
 #include "ProceduralMeshComponent.h"
 #include "KismetProceduralMeshLibrary.h"
+#include "Math/Triangulator.h"
+#include "Math/StrawTriangle.h"
 
 // Sets default values
 ADrawingActualizer::ADrawingActualizer()
@@ -33,33 +35,12 @@ void ADrawingActualizer::Tick(float DeltaTime)
 /// <summary>
 /// 평면에 그린 그림을 3D로 실체화
 /// </summary>
-/// <param name="DrawingVertices">선 vertex array, 모두 이어져 있어야 함</param>
+/// <param name="DrawingVertices">끊김이 없는 선 vertex array</param>
 /// <param name="DrawingPlaneRotation">그림을 그린 평면의 Rotation 값</param>
 /// <param name="MeshMaterial">실체화된 오브젝트에 적용할 Material</param>
-void ADrawingActualizer::Actualize2DDrwaing(TArray<FVector> DrawingVertices, FRotator DrawingPlaneRotation, UMaterialInterface* MeshMaterial)
+void ADrawingActualizer::Actualize2D(TArray<FVector> DrawingVertices, FBox DrawingPlaneBox, FRotator DrawingPlaneRotation, UMaterialInterface* MeshMaterial)
 {
 	Material = MeshMaterial;
-
-	/*Vertices.Add(FVector(-50, 0, 50));
-	Vertices.Add(FVector(-50, 0, -50));
-	Vertices.Add(FVector(50, 0, 50));
-	Vertices.Add(FVector(50, 0, -50));
-
-	UVs.Add(FVector2D(0, 0));
-	UVs.Add(FVector2D(0, 1));
-	UVs.Add(FVector2D(1, 0));
-	UVs.Add(FVector2D(1, 1));
-
-	//Triangle1
-	Triangles.Add(0);
-	Triangles.Add(1);
-	Triangles.Add(2);
-
-	//Triangle2
-	Triangles.Add(2);
-	Triangles.Add(1);
-	Triangles.Add(3);
-	*/
 
 	// 1. 회전되어 있는 그림을 정면(x축)을 바라보도록 회전시켜 2차원(y, z)으로 축소
 	for (int i = 0; i < DrawingVertices.Num(); i++)
@@ -68,7 +49,20 @@ void ADrawingActualizer::Actualize2DDrwaing(TArray<FVector> DrawingVertices, FRo
 	}
 
 	// 2. 들로네 삼각분할 수행
-	
+	TArray<FVector2D> DrawingVertices2D;
+	for (FVector Vertex : DrawingVertices)
+	{
+		DrawingVertices2D.Add(FVector2D(Vertex.Y, Vertex.Z));
+	}
+
+	TArray<StrawTriangle> Triangles3D = Triangulator::Triangulate2D(DrawingPlaneBox, DrawingVertices2D);
+	/*for (StrawTriangle Triangle : Triangles3D)
+	{
+		DrawDebugLine(GetWorld(), FVector(0, Triangle.GetP1().X, Triangle.GetP1().Y), FVector(0, Triangle.GetP2().X, Triangle.GetP2().Y), FColor::Red, true);
+		DrawDebugLine(GetWorld(), FVector(0, Triangle.GetP2().X, Triangle.GetP2().Y), FVector(0, Triangle.GetP3().X, Triangle.GetP3().Y), FColor::Red, true);
+		DrawDebugLine(GetWorld(), FVector(0, Triangle.GetP3().X, Triangle.GetP3().Y), FVector(0, Triangle.GetP1().X, Triangle.GetP1().Y), FColor::Red, true);
+	}*/
+
 	// 3. 그림을 벗어나는 삼각형 제거
 	// 4. DrawingVertices에 x 값을 더해 뒷면 Vertex 정보 추가
 	// 5. 옆면 삼각분할 수행

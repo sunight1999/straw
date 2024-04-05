@@ -5,18 +5,14 @@
 #include "CoreMinimal.h"
 
 class StrawTriangle;
+class StrawEdge;
 
 /**
  * 
  */
-class STRAW_API Triangulator
+namespace Triangulator
 {
-public:
-	Triangulator();
-	~Triangulator();
-
-	TArray<int32> CreateTriangulatedMesh(TArray<FVector> Vertices);
-
-private:
-	TArray<StrawTriangle> Triangles;
+	TArray<StrawTriangle> Triangulate2D(FBox DrawingPlaneBox, TArray<FVector2D> Vertices);
+	TArray<StrawTriangle> AddVertex(TArray<StrawTriangle> Triangles, FVector2D Vertex);
+	TArray<StrawEdge> UniqueEdges(TArray<StrawEdge> Edges);
 };

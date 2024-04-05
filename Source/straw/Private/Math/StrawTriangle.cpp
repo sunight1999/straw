@@ -3,12 +3,9 @@
 
 #include "Math/StrawTriangle.h"
 
-StrawTriangle::StrawTriangle(FVector2D _P1, FVector2D _P2, FVector2D _P3)
+StrawTriangle::StrawTriangle(FVector2D _P1, FVector2D _P2, FVector2D _P3):
+	P1(_P1), P2(_P2), P3(_P3)
 {
-	P1 = _P1;
-	P2 = _P2;
-	P3 = _P3;
-	
 	CalculateCircumcircle();
 }
 
@@ -119,13 +116,25 @@ bool StrawTriangle::IsTriangleContainingPoint(FVector2D Point) const
 {
 	// 1. 삼각형 p1p2p3이 있을 때, 벡터 p1p2, p2p3, p3p1을 각각 벡터 p1P(oint), p2P, p3P와 외적
 	// 2. 각 외적으로 나온 값이 모두 양수이거나 모두 음수면 삼각형 내부로 판단 (삼각형의 각 변을 기준으로 Point가 어느 방향인지 확인)
+	
+	/*
 	FVector2D P1P = Point - P1;
 	FVector2D P2P = Point - P2;
 	FVector2D P3P = Point - P3;
 
-	bool Side1 = FVector2D::CrossProduct(P2 - P1, P1P) >= 0;
-	bool Side2 = FVector2D::CrossProduct(P3 - P2, P2P) >= 0;
-	bool Side3 = FVector2D::CrossProduct(P1 - P3, P3P) >= 0;
+	bool Side1 = FVector2D::CrossProduct(P1P, P2 - P1) >= 0;
+	bool Side2 = FVector2D::CrossProduct(P2P, P3 - P2) >= 0;
+	bool Side3 = FVector2D::CrossProduct(P3P, P1 - P3) >= 0;
+	*/
+	
+	FVector P1P = FVector(0, (Point - P1).X, (Point - P1).Y);
+	FVector P2P = FVector(0, (Point - P2).X, (Point - P2).Y);
+	FVector P3P = FVector(0, (Point - P3).X, (Point - P3).Y);
+
+	bool Side1 = FVector::CrossProduct(P1P, FVector(0, (P2 - P1).X, (P2 - P1).Y)).X >= 0;
+	bool Side2 = FVector::CrossProduct(P2P, FVector(0, (P3 - P2).X, (P3 - P2).Y)).X >= 0;
+	bool Side3 = FVector::CrossProduct(P3P, FVector(0, (P1 - P3).X, (P1 - P3).Y)).X >= 0;
+	
 
 	return Side1 == Side2 == Side3;
 }

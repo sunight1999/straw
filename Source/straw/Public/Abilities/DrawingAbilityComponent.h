@@ -43,7 +43,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Drawing Ability")
 	float DrawingCollisionHeight = 180.f;
 
-	UPROPERTY(VisibleAnywhere, Category = "Drawing Ability")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Drawing Ability", Meta = (AllowPrivateAccess = "true"))
 	USplineComponent* SplineComponent;
 	TArray<USplineMeshComponent*> SplineMeshes;
 	TArray<FVector> SplinePoints;

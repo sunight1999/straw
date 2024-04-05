@@ -33,6 +33,17 @@ ABaseCharacter::ABaseCharacter()
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	StrawTriangle Teriangle(FVector2D(-900, -120), FVector2D(0, 480), FVector2D(900, -120));
+	//UE_LOG(LogTemp, Display, TEXT("%d"), Teriangle.IsTriangleContainingPoint(FVector2D(0, 89)));
+	//UE_LOG(LogTemp, Display, TEXT("%d"), Teriangle.IsTriangleContainingPoint(FVector2D(0, 0)));
+	//UE_LOG(LogTemp, Display, TEXT("%d"), Teriangle.IsTriangleContainingPoint(FVector2D(-900, -119)));
+	//UE_LOG(LogTemp, Display, TEXT("%d"), Teriangle.IsTriangleContainingPoint(FVector2D(-900, -120)));
+	//UE_LOG(LogTemp, Display, TEXT("%d"), Teriangle.IsTriangleContainingPoint(FVector2D(-900, -121)));
+	//UE_LOG(LogTemp, Display, TEXT("%d"), Teriangle.IsTriangleContainingPoint(FVector2D(0, 480)));
+	//UE_LOG(LogTemp, Display, TEXT("%d"), Teriangle.IsTriangleContainingPoint(FVector2D(0, 481)));
+	//UE_LOG(LogTemp, Display, TEXT("%d"), Teriangle.IsTriangleContainingPoint(FVector2D(0, 479)));
+	//UE_LOG(LogTemp, Display, TEXT("%d"), Teriangle.IsTriangleContainingPoint(FVector2D(0, -121)));
 }
 
 void ABaseCharacter::Tick(float DeltaTime)
@@ -129,6 +140,7 @@ void ABaseCharacter::ReadyAbility()
 		DrawDebugPoint(GetWorld(), FVector(0, 3, 1), 4, FColor::Black, true);
 		DrawDebugPoint(GetWorld(), FVector(0, 3, -1), 4, FColor::Black, true);
 		*/
+
 	}
 
 	bReadyAbility = true;
