@@ -61,8 +61,8 @@ TArray<StrawTriangle> Triangulator::AddVertex(TArray<StrawTriangle> Triangles, F
 	{
 		StrawTriangle Triangle = Triangles[i];
 
-		// 삼각형이 Vertex를 포함하고 있다면 Triangles에서 제거하고 해당 Edge와 Vertex로 새로운 삼각형 생성
-		if (Triangle.IsTriangleContainingPoint(Vertex))
+		// 삼각형의 외접원이 Vertex를 포함하고 있다면 Triangles에서 제거하고 해당 Edge와 Vertex로 새로운 삼각형 생성
+		if (Triangle.IsCircumcircleContainingPoint(Vertex))
 		{
 			Edges.Add(StrawEdge(Triangle.GetP1(), Triangle.GetP2()));
 			Edges.Add(StrawEdge(Triangle.GetP2(), Triangle.GetP3()));

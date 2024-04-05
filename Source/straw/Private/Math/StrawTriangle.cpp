@@ -3,10 +3,13 @@
 
 #include "Math/StrawTriangle.h"
 
-StrawTriangle::StrawTriangle(FVector2D _P1, FVector2D _P2, FVector2D _P3):
+StrawTriangle::StrawTriangle(FVector2D _P1, FVector2D _P2, FVector2D _P3, bool bCalculateCircumcircle):
 	P1(_P1), P2(_P2), P3(_P3)
 {
-	CalculateCircumcircle();
+	if (bCalculateCircumcircle)
+	{
+		CalculateCircumcircle();
+	}
 }
 
 StrawTriangle::~StrawTriangle()
@@ -107,6 +110,11 @@ void StrawTriangle::CalculateCircumcircle()
 	SquaredCircumcircleRadius = FVector2D::DistSquared(CircumcircleCenter, P1);
 }
 
+float StrawTriangle::GetArea() const
+{
+	return abs((P1.X * P2.Y + P2.X * P3.Y + P3.X * P1.Y) - (P1.X * P3.Y + P3.X * P2.Y + P2.X * P1.Y)) / 2;
+}
+
 /// <summary>
 /// 주어진 Point가 삼각형 내부에 있는지 여부 반환
 /// </summary>
@@ -114,29 +122,12 @@ void StrawTriangle::CalculateCircumcircle()
 /// <returns></returns>
 bool StrawTriangle::IsTriangleContainingPoint(FVector2D Point) const
 {
-	// 1. 삼각형 p1p2p3이 있을 때, 벡터 p1p2, p2p3, p3p1을 각각 벡터 p1P(oint), p2P, p3P와 외적
-	// 2. 각 외적으로 나온 값이 모두 양수이거나 모두 음수면 삼각형 내부로 판단 (삼각형의 각 변을 기준으로 Point가 어느 방향인지 확인)
-	
-	/*
-	FVector2D P1P = Point - P1;
-	FVector2D P2P = Point - P2;
-	FVector2D P3P = Point - P3;
+	//삼각형 p1p2p3이 있을 때, 삼각형 p1p2p, p1p3p, p2p3p의 넓이의 합이 삼각형 p1p2p3의 넓이와 같은지 확인해 내부 여부 판별
+	StrawTriangle Triangle1(P1, P2, Point, false);
+	StrawTriangle Triangle2(P1, P3, Point, false);
+	StrawTriangle Triangle3(P2, P3, Point, false);
 
-	bool Side1 = FVector2D::CrossProduct(P1P, P2 - P1) >= 0;
-	bool Side2 = FVector2D::CrossProduct(P2P, P3 - P2) >= 0;
-	bool Side3 = FVector2D::CrossProduct(P3P, P1 - P3) >= 0;
-	*/
-	
-	FVector P1P = FVector(0, (Point - P1).X, (Point - P1).Y);
-	FVector P2P = FVector(0, (Point - P2).X, (Point - P2).Y);
-	FVector P3P = FVector(0, (Point - P3).X, (Point - P3).Y);
-
-	bool Side1 = FVector::CrossProduct(P1P, FVector(0, (P2 - P1).X, (P2 - P1).Y)).X >= 0;
-	bool Side2 = FVector::CrossProduct(P2P, FVector(0, (P3 - P2).X, (P3 - P2).Y)).X >= 0;
-	bool Side3 = FVector::CrossProduct(P3P, FVector(0, (P1 - P3).X, (P1 - P3).Y)).X >= 0;
-	
-
-	return Side1 == Side2 == Side3;
+	return abs(Triangle1.GetArea() + Triangle2.GetArea() + Triangle3.GetArea() - GetArea()) < DBL_EPSILON;
 }
 
 /// <summary>

@@ -53,15 +53,16 @@ void ADrawingActualizer::Actualize2D(TArray<FVector> DrawingVertices, FBox Drawi
 	for (FVector Vertex : DrawingVertices)
 	{
 		DrawingVertices2D.Add(FVector2D(Vertex.Y, Vertex.Z));
+		DrawDebugPoint(GetWorld(), FVector(0, Vertex.Y, Vertex.Z), 3, FColor::Black, true);
 	}
 
 	TArray<StrawTriangle> Triangles3D = Triangulator::Triangulate2D(DrawingPlaneBox, DrawingVertices2D);
-	/*for (StrawTriangle Triangle : Triangles3D)
+	for (StrawTriangle Triangle : Triangles3D)
 	{
 		DrawDebugLine(GetWorld(), FVector(0, Triangle.GetP1().X, Triangle.GetP1().Y), FVector(0, Triangle.GetP2().X, Triangle.GetP2().Y), FColor::Red, true);
 		DrawDebugLine(GetWorld(), FVector(0, Triangle.GetP2().X, Triangle.GetP2().Y), FVector(0, Triangle.GetP3().X, Triangle.GetP3().Y), FColor::Red, true);
 		DrawDebugLine(GetWorld(), FVector(0, Triangle.GetP3().X, Triangle.GetP3().Y), FVector(0, Triangle.GetP1().X, Triangle.GetP1().Y), FColor::Red, true);
-	}*/
+	}
 
 	// 3. 그림을 벗어나는 삼각형 제거
 	// 4. DrawingVertices에 x 값을 더해 뒷면 Vertex 정보 추가
