@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -25,13 +25,13 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	/* Ä³¸¯ÅÍ ÀÌµ¿ °ü·Ã */
+	/* ìºë¦­í„° ì´ë™ ê´€ë ¨ */
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 	void Turn(float Value);
 	void LookUp(float Value);
 
-	/* ´É·Â »ç¿ë °ü·Ã */
+	/* ëŠ¥ë ¥ ì‚¬ìš© ê´€ë ¨ */
 	void ReadyAbility();
 	void EndReadyAbility();
 	void UseAbility();

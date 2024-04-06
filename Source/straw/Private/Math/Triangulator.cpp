@@ -6,16 +6,16 @@
 #include "Math/StrawEdge.h"
 
 /// <summary>
-/// ÁÖ¾îÁø Vertices·Î ±¸¼ºµÈ ¸éÀ» °¡Á¤ÇØ µé·Î³× »ï°¢ºĞÇÒÀ» ÁøÇàÇÏ°í ¸ğµç »ï°¢Çü Á¤º¸¸¦ ¹İÈ¯
+/// ì£¼ì–´ì§„ Verticesë¡œ êµ¬ì„±ëœ ë©´ì„ ê°€ì •í•´ ë“¤ë¡œë„¤ ì‚¼ê°ë¶„í• ì„ ì§„í–‰í•˜ê³  ëª¨ë“  ì‚¼ê°í˜• ì •ë³´ë¥¼ ë°˜í™˜
 /// </summary>
-/// <param name="DrawingPlaneBoxExtent">±×¸²À» ±×¸®´Â CollisionÀÇ Box Á¤º¸</param>
-/// <param name="Vertices">Â÷·Ê´ë·Î ÀÌ¾îÁø ¼±ÀÇ Vertex ¹è¿­</param>
-/// <returns>»ï°¢ÇüÀÇ Vertex </returns>
+/// <param name="DrawingPlaneBoxExtent">ê·¸ë¦¼ì„ ê·¸ë¦¬ëŠ” Collisionì˜ Box ì •ë³´</param>
+/// <param name="Vertices">ì°¨ë¡€ëŒ€ë¡œ ì´ì–´ì§„ ì„ ì˜ Vertex ë°°ì—´</param>
+/// <returns>ì‚¼ê°í˜•ì˜ Vertex </returns>
 TArray<StrawTriangle> Triangulator::Triangulate2D(FBox DrawingPlaneBox, TArray<FVector2D> Vertices)
 {
 	TArray<StrawTriangle> Triangles;
 
-	// 1. Drawing CollisionÀ» °¨½Î´Â BoxÀÇ Áß½É°ú Extent¸¦ ÀÌ¿ëÇØ ¸ğµç Vertex¸¦ Æ÷ÇÔ½ÃÅ³ ¼ö ÀÖ´Â Super Triangle »ı¼º
+	// 1. Drawing Collisionì„ ê°ì‹¸ëŠ” Boxì˜ ì¤‘ì‹¬ê³¼ Extentë¥¼ ì´ìš©í•´ ëª¨ë“  Vertexë¥¼ í¬í•¨ì‹œí‚¬ ìˆ˜ ìˆëŠ” Super Triangle ìƒì„±
 	FVector BoxCenter;
 	FVector BoxExtent;
 	DrawingPlaneBox.GetCenterAndExtents(BoxCenter, BoxExtent);
@@ -26,13 +26,13 @@ TArray<StrawTriangle> Triangulator::Triangulate2D(FBox DrawingPlaneBox, TArray<F
 	FVector2D SuperTriangleP3(BoxCenter.Y + BoxExtent.Y, BoxCenter.Z - BoxExtent.Z);
 	Triangles.Add(StrawTriangle(SuperTriangleP1, SuperTriangleP2, SuperTriangleP3));
 
-	// 2. µé·Î³× »ï°¢ºĞÇÒ ¼öÇà
+	// 2. ë“¤ë¡œë„¤ ì‚¼ê°ë¶„í•  ìˆ˜í–‰
 	for (FVector2D Vertex : Vertices)
 	{
 		Triangles = AddVertex(Triangles, Vertex);
 	}
 
-	// 3. Super Triangle°ú edge¸¦ °øÀ¯ÇÏ´Â »ï°¢Çü Á¦°Å
+	// 3. Super Triangleê³¼ edgeë¥¼ ê³µìœ í•˜ëŠ” ì‚¼ê°í˜• ì œê±°
 	for (int i = Triangles.Num() - 1; i >= 0; i--)
 	{
 		StrawTriangle Triangle = Triangles[i];
@@ -45,9 +45,9 @@ TArray<StrawTriangle> Triangulator::Triangulate2D(FBox DrawingPlaneBox, TArray<F
 		}
 	}
 
-	// 4. ±×¸² ¹ÛÀ» ¹ş¾î³ª´Â »ï°¢Çü Á¦°Å
+	// 4. ê·¸ë¦¼ ë°–ì„ ë²—ì–´ë‚˜ëŠ” ì‚¼ê°í˜• ì œê±°
 
-	// 5. »ï°¢ÇüÀ» VertexÀÇ ÀÎµ¦½º·Î Ç¥ÇöÇØ¼­ ¹İÈ¯
+	// 5. ì‚¼ê°í˜•ì„ Vertexì˜ ì¸ë±ìŠ¤ë¡œ í‘œí˜„í•´ì„œ ë°˜í™˜
 
 	return Triangles;
 
@@ -61,7 +61,7 @@ TArray<StrawTriangle> Triangulator::AddVertex(TArray<StrawTriangle> Triangles, F
 	{
 		StrawTriangle Triangle = Triangles[i];
 
-		// »ï°¢ÇüÀÇ ¿ÜÁ¢¿øÀÌ Vertex¸¦ Æ÷ÇÔÇÏ°í ÀÖ´Ù¸é Triangles¿¡¼­ Á¦°ÅÇÏ°í ÇØ´ç Edge¿Í Vertex·Î »õ·Î¿î »ï°¢Çü »ı¼º
+		// ì‚¼ê°í˜•ì˜ ì™¸ì ‘ì›ì´ Vertexë¥¼ í¬í•¨í•˜ê³  ìˆë‹¤ë©´ Trianglesì—ì„œ ì œê±°í•˜ê³  í•´ë‹¹ Edgeì™€ Vertexë¡œ ìƒˆë¡œìš´ ì‚¼ê°í˜• ìƒì„±
 		if (Triangle.IsCircumcircleContainingPoint(Vertex))
 		{
 			Edges.Add(StrawEdge(Triangle.GetP1(), Triangle.GetP2()));

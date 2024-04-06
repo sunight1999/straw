@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Abilities/DrawingActualizer.h"
@@ -33,22 +33,22 @@ void ADrawingActualizer::Tick(float DeltaTime)
 }
 
 /// <summary>
-/// Æò¸é¿¡ ±×¸° ±×¸²À» 3D·Î ½ÇÃ¼È­
+/// í‰ë©´ì— ê·¸ë¦° ê·¸ë¦¼ì„ 3Dë¡œ ì‹¤ì²´í™”
 /// </summary>
-/// <param name="DrawingVertices">²÷±èÀÌ ¾ø´Â ¼± vertex array</param>
-/// <param name="DrawingPlaneRotation">±×¸²À» ±×¸° Æò¸éÀÇ Rotation °ª</param>
-/// <param name="MeshMaterial">½ÇÃ¼È­µÈ ¿ÀºêÁ§Æ®¿¡ Àû¿ëÇÒ Material</param>
+/// <param name="DrawingVertices">ëŠê¹€ì´ ì—†ëŠ” ì„  vertex array</param>
+/// <param name="DrawingPlaneRotation">ê·¸ë¦¼ì„ ê·¸ë¦° í‰ë©´ì˜ Rotation ê°’</param>
+/// <param name="MeshMaterial">ì‹¤ì²´í™”ëœ ì˜¤ë¸Œì íŠ¸ì— ì ìš©í•  Material</param>
 void ADrawingActualizer::Actualize2D(TArray<FVector> DrawingVertices, FBox DrawingPlaneBox, FRotator DrawingPlaneRotation, UMaterialInterface* MeshMaterial)
 {
 	Material = MeshMaterial;
 
-	// 1. È¸ÀüµÇ¾î ÀÖ´Â ±×¸²À» Á¤¸é(xÃà)À» ¹Ù¶óº¸µµ·Ï È¸Àü½ÃÄÑ 2Â÷¿ø(y, z)À¸·Î Ãà¼Ò
+	// 1. íšŒì „ë˜ì–´ ìˆëŠ” ê·¸ë¦¼ì„ ì •ë©´(xì¶•)ì„ ë°”ë¼ë³´ë„ë¡ íšŒì „ì‹œì¼œ 2ì°¨ì›(y, z)ìœ¼ë¡œ ì¶•ì†Œ
 	for (int i = 0; i < DrawingVertices.Num(); i++)
 	{
 		DrawingVertices[i] = DrawingPlaneRotation.UnrotateVector(DrawingVertices[i]);
 	}
 
-	// 2. µé·Î³× »ï°¢ºĞÇÒ ¼öÇà
+	// 2. ë“¤ë¡œë„¤ ì‚¼ê°ë¶„í•  ìˆ˜í–‰
 	TArray<FVector2D> DrawingVertices2D;
 	for (FVector Vertex : DrawingVertices)
 	{
@@ -64,10 +64,10 @@ void ADrawingActualizer::Actualize2D(TArray<FVector> DrawingVertices, FBox Drawi
 		DrawDebugLine(GetWorld(), FVector(0, Triangle.GetP3().X, Triangle.GetP3().Y), FVector(0, Triangle.GetP1().X, Triangle.GetP1().Y), FColor::Red, true);
 	}
 
-	// 3. ±×¸²À» ¹ş¾î³ª´Â »ï°¢Çü Á¦°Å
-	// 4. DrawingVertices¿¡ x °ªÀ» ´õÇØ µŞ¸é Vertex Á¤º¸ Ãß°¡
-	// 5. ¿·¸é »ï°¢ºĞÇÒ ¼öÇà
-	// 6. »ı¼ºµÈ object¿¡ ¿ø·¡ È¸Àü°ª Àû¿ë
+	// 3. ê·¸ë¦¼ì„ ë²—ì–´ë‚˜ëŠ” ì‚¼ê°í˜• ì œê±°
+	// 4. DrawingVerticesì— x ê°’ì„ ë”í•´ ë’·ë©´ Vertex ì •ë³´ ì¶”ê°€
+	// 5. ì˜†ë©´ ì‚¼ê°ë¶„í•  ìˆ˜í–‰
+	// 6. ìƒì„±ëœ objectì— ì›ë˜ íšŒì „ê°’ ì ìš©
 
 	/*
 	for (int i = 0; i < DrawingVertices.Num(); i++)

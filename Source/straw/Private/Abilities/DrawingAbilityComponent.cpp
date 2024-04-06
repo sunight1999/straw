@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Abilities/DrawingAbilityComponent.h"
@@ -18,7 +18,7 @@ UDrawingAbilityComponent::UDrawingAbilityComponent()
 	DrawingCollision->SetBoxExtent(FVector(1.f, 300.f, 100.f));
 	DrawingCollision->SetRelativeLocation(FVector(80.f, 0.f, 80.f));
 
-	// ÇöÀç collision channel ¼³Á¤ÀÌ ¾È µÊ
+	// í˜„ì¬ collision channel ì„¤ì •ì´ ì•ˆ ë¨
 	DrawingCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
 	DrawingCollision->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Block);
 	DrawingCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -45,14 +45,14 @@ void UDrawingAbilityComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 }
 
 /*
- * ±×¸®±â °ü·Ã ÇÔ¼ö
+ * ê·¸ë¦¬ê¸° ê´€ë ¨ í•¨ìˆ˜
  */
 /// <summary>
-/// ÀÌÀü¿¡ ±×·È´ø Á¤º¸¸¦ ¸ğµÎ ÃÊ±âÈ­
+/// ì´ì „ì— ê·¸ë ¸ë˜ ì •ë³´ë¥¼ ëª¨ë‘ ì´ˆê¸°í™”
 /// </summary>
 void UDrawingAbilityComponent::StartDrawing()
 {
-	// Drawing Collision À§Ä¡ ¹× È¸Àü°ª ¼³Á¤
+	// Drawing Collision ìœ„ì¹˜ ë° íšŒì „ê°’ ì„¤ì •
 	FRotator CameraRotation;
 	const FVector CameraForwardVector = OwnerCharacter->GetCameraForwardVector(&CameraRotation, true);
 	FVector NewLocation = OwnerCharacter->GetActorLocation() + CameraForwardVector * DrawingCollisionDistance;
@@ -61,7 +61,7 @@ void UDrawingAbilityComponent::StartDrawing()
 	DrawingCollision->SetWorldLocationAndRotation(NewLocation, CameraRotation);
 	DrawingCollision->bHiddenInGame = false;
 
-	// ÀÌÀü Drawing Á¤º¸ ÃÊ±âÈ­
+	// ì´ì „ Drawing ì •ë³´ ì´ˆê¸°í™”
 	SplineComponent->ClearSplinePoints();
 
 	for (int i = 0; i < SplineMeshes.Num(); i++)
@@ -75,12 +75,12 @@ void UDrawingAbilityComponent::StartDrawing()
 	SplineMeshes.Empty();
 	SplinePoints.Empty();
 
-	DrawingTick = DrawingInterval + 1;	// ½ÃÀÛ ÁöÁ¡À» Áö¿¬ ¾øÀÌ ¹Ù·Î ±×¸± ¼ö ÀÖµµ·Ï DrawingInterval¿¡ 1À» ´õÇÑ °ªÀ¸·Î ÃÊ±âÈ­
+	DrawingTick = DrawingInterval + 1;	// ì‹œì‘ ì§€ì ì„ ì§€ì—° ì—†ì´ ë°”ë¡œ ê·¸ë¦´ ìˆ˜ ìˆë„ë¡ DrawingIntervalì— 1ì„ ë”í•œ ê°’ìœ¼ë¡œ ì´ˆê¸°í™”
 	bDrawing = true;
 }
 
 /// <summary>
-/// ¼±À» ±¸¼ºÇÒ »õ·Î¿î Á¡ Ãß°¡, ÇöÀç Ä«¸Ş¶ó Rotation ¹æÇâÀ¸·Î Line Trace¸¦ ¼öÇàÇØ Drawing Collision°ú Ãæµ¹ÇÑ ÁöÁ¡À» »õ·Î¿î Á¡À¸·Î ÁöÁ¤
+/// ì„ ì„ êµ¬ì„±í•  ìƒˆë¡œìš´ ì  ì¶”ê°€, í˜„ì¬ ì¹´ë©”ë¼ Rotation ë°©í–¥ìœ¼ë¡œ Line Traceë¥¼ ìˆ˜í–‰í•´ Drawing Collisionê³¼ ì¶©ëŒí•œ ì§€ì ì„ ìƒˆë¡œìš´ ì ìœ¼ë¡œ ì§€ì •
 /// </summary>
 void UDrawingAbilityComponent::AddPoint()
 {
@@ -99,10 +99,10 @@ void UDrawingAbilityComponent::AddPoint()
 }
 
 /// <summary>
-/// ¼±À» ±¸¼ºÇÒ »õ·Î¿î Á¡ Ãß°¡
+/// ì„ ì„ êµ¬ì„±í•  ìƒˆë¡œìš´ ì  ì¶”ê°€
 /// </summary>
-/// <param name="Point">»õ·Î¿î Á¡ Vector Á¤º¸</param>
-/// <param name="bForceDraw">trueÀÏ °æ¿ì Drawing Interval°ú »ó°ü¾øÀÌ ¹«Á¶°Ç Á¡ Ãß°¡, Drawing TickÀº ÃÊ±âÈ­ µÊ</param>
+/// <param name="Point">ìƒˆë¡œìš´ ì  Vector ì •ë³´</param>
+/// <param name="bForceDraw">trueì¼ ê²½ìš° Drawing Intervalê³¼ ìƒê´€ì—†ì´ ë¬´ì¡°ê±´ ì  ì¶”ê°€, Drawing Tickì€ ì´ˆê¸°í™” ë¨</param>
 void UDrawingAbilityComponent::AddPoint(FVector Point, bool bForceDraw)
 {
 	if (bForceDraw || DrawingTick > DrawingInterval)
@@ -117,20 +117,20 @@ void UDrawingAbilityComponent::AddPoint(FVector Point, bool bForceDraw)
 }
 
 /// <summary>
-/// ¼± ±×¸®±â¸¦ Á¾·áÇÏ°í ¿ÀºêÁ§Æ® »ı¼º ½ÃÀÛ
+/// ì„  ê·¸ë¦¬ê¸°ë¥¼ ì¢…ë£Œí•˜ê³  ì˜¤ë¸Œì íŠ¸ ìƒì„± ì‹œì‘
 /// </summary>
 void UDrawingAbilityComponent::EndDrawing()
 {
 	DrawingCollision->bHiddenInGame = true;
 	bDrawing = false;
 	
-	// DrawingActualizer¿¡ ¼± ¹öÅØ½º Á¤º¸¸¦ Àü´ŞÇØ ¿ÀºêÁ§Æ® »ı¼º ¿äÃ»
+	// DrawingActualizerì— ì„  ë²„í…ìŠ¤ ì •ë³´ë¥¼ ì „ë‹¬í•´ ì˜¤ë¸Œì íŠ¸ ìƒì„± ìš”ì²­
 	ADrawingActualizer* DrawingActualizer = GetWorld()->SpawnActor<ADrawingActualizer>(ADrawingActualizer::StaticClass(), GetOwner()->GetActorLocation(), FQuat::Identity.Rotator());
 	DrawingActualizer->Actualize2D(SplinePoints, DrawingCollision->Bounds.GetBox(), DrawingCollision->GetComponentRotation(), ActualizedObjectMaterial);
 }
 
 /// <summary>
-/// »õ·Î Ãß°¡µÈ Á¡°ú ÀÌÀü Á¡À» ÀÕ´Â Spline Mesh Ãß°¡
+/// ìƒˆë¡œ ì¶”ê°€ëœ ì ê³¼ ì´ì „ ì ì„ ì‡ëŠ” Spline Mesh ì¶”ê°€
 /// </summary>
 void UDrawingAbilityComponent::UpdateSpline()
 {
@@ -139,7 +139,7 @@ void UDrawingAbilityComponent::UpdateSpline()
 		return;
 	}
 
-	// Spline Mesh¸¦ »ı¼ºÇÏ±â¿¡ Point°¡ ºÎÁ·ÇÏ°Å³ª ÀÌ¹Ì ÇÊ¿äÇÑ Spline Mesh°¡ ¸ğµÎ »ı¼ºµÈ °æ¿ì Á¾·á
+	// Spline Meshë¥¼ ìƒì„±í•˜ê¸°ì— Pointê°€ ë¶€ì¡±í•˜ê±°ë‚˜ ì´ë¯¸ í•„ìš”í•œ Spline Meshê°€ ëª¨ë‘ ìƒì„±ëœ ê²½ìš° ì¢…ë£Œ
 	int32 SplinePointNum = SplineComponent->GetNumberOfSplinePoints();
 
 	if (SplinePointNum <= 1 || SplinePointNum - 1 == SplineMeshes.Num())
@@ -147,10 +147,10 @@ void UDrawingAbilityComponent::UpdateSpline()
 		return;
 	}
 
-	/* Spline Mesh »ı¼º ¹× ¼³Á¤ */
+	/* Spline Mesh ìƒì„± ë° ì„¤ì • */
 	USplineMeshComponent* SplineMesh = NewObject<USplineMeshComponent>(this, USplineMeshComponent::StaticClass());
-	SplineMesh->SetForwardAxis(ESplineMeshAxis::Z);	// Spline Mesh Á¤¸é ¹æÇâ ¼³Á¤
-	SplineMesh->SetStaticMesh(LineMesh);			// Spline Mesh·Î »ç¿ëÇÒ Static Mesh ¼³Á¤
+	SplineMesh->SetForwardAxis(ESplineMeshAxis::Z);	// Spline Mesh ì •ë©´ ë°©í–¥ ì„¤ì •
+	SplineMesh->SetStaticMesh(LineMesh);			// Spline Meshë¡œ ì‚¬ìš©í•  Static Mesh ì„¤ì •
 	SplineMesh->SetMobility(EComponentMobility::Movable);
 	SplineMesh->CreationMethod = EComponentCreationMethod::UserConstructionScript;
 	SplineMesh->AttachToComponent(SplineComponent, FAttachmentTransformRules::KeepRelativeTransform);
@@ -159,8 +159,8 @@ void UDrawingAbilityComponent::UpdateSpline()
 	SplineMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SplineMesh->RegisterComponentWithWorld(GetWorld());
 
-	// Spline Mesh Point¿Í Tangent ¼³Á¤
-	// Spline Mesh´Â Start, End¿¡ ´ëÇÑ Point¿Í Tangent·Î ±¸¼ºµÇ¾î Mesh¸¦ º¯Çü
+	// Spline Mesh Pointì™€ Tangent ì„¤ì •
+	// Spline MeshëŠ” Start, Endì— ëŒ€í•œ Pointì™€ Tangentë¡œ êµ¬ì„±ë˜ì–´ Meshë¥¼ ë³€í˜•
 	int32 CurrentSplinePointIndex = SplinePointNum - 1;
 	int32 PreviousSplinePointIndex = SplinePointNum - 2;
 	const FVector SplineMeshStartPoint = SplineComponent->GetLocationAtSplinePoint(PreviousSplinePointIndex, ESplineCoordinateSpace::Local);

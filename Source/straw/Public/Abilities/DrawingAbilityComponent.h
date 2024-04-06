@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -63,7 +63,7 @@ private:
 
 	bool bDrawing;
 
-	ABaseCharacter* OwnerCharacter;	// Ä«¸Ş¶ó È¸Àü °ªÀ» °¡Á®¿Ã ¶§ »ç¿ëÇÒ Ä³¸¯ÅÍ Æ÷ÀÎÅÍ Ä³½Ì
+	ABaseCharacter* OwnerCharacter;	// ì¹´ë©”ë¼ íšŒì „ ê°’ì„ ê°€ì ¸ì˜¬ ë•Œ ì‚¬ìš©í•  ìºë¦­í„° í¬ì¸í„° ìºì‹±
 	//UPROPERTY(VisibleAnywhere, Category = "Drawing Ability")
 	//UDecalComponent* CircleDecal;
 };

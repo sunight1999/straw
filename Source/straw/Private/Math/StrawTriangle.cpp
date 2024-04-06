@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Math/StrawTriangle.h"
@@ -20,29 +20,29 @@ StrawTriangle::~StrawTriangle()
 void StrawTriangle::CalculateCircumcircle()
 {
 	/*
-	 * »ï°¢Çü p1p2p3ÀÇ ¿Ü½É °è»ê
-	 * : ¼±ºĞ p1p2¿Í ¼±ºĞ p2p3À» °¢°¢ ¼öÁ÷ÀÌµîºĞÇÏ´Â µÎ Á÷¼±À» ¿¬¸³ÇÏ¿© ¿Ü½É °è»ê
+	 * ì‚¼ê°í˜• p1p2p3ì˜ ì™¸ì‹¬ ê³„ì‚°
+	 * : ì„ ë¶„ p1p2ì™€ ì„ ë¶„ p2p3ì„ ê°ê° ìˆ˜ì§ì´ë“±ë¶„í•˜ëŠ” ë‘ ì§ì„ ì„ ì—°ë¦½í•˜ì—¬ ì™¸ì‹¬ ê³„ì‚°
 	 * 
-	 * ¼±ºĞ p1p2¿Í ¼öÁ÷ÀÌµîºĞ¼± : y = m1x + b1, y = m'1x + b1	(-> ±â¿ï±â * ±â¿ï±â°¡ -1ÀÌ¸é µÎ ¼±ºĞÀº Á÷±³)
-	 * ¼±ºĞ p2p3¿Í ¼öÁ÷ÀÌµîºĞ¼± : y = m2x + b2, y = m'2x + b2
+	 * ì„ ë¶„ p1p2ì™€ ìˆ˜ì§ì´ë“±ë¶„ì„  : y = m1x + b1, y = m'1x + b1	(-> ê¸°ìš¸ê¸° * ê¸°ìš¸ê¸°ê°€ -1ì´ë©´ ë‘ ì„ ë¶„ì€ ì§êµ)
+	 * ì„ ë¶„ p2p3ì™€ ìˆ˜ì§ì´ë“±ë¶„ì„  : y = m2x + b2, y = m'2x + b2
 	 * 
-	 * °è»ê ÀıÂ÷
-	 * 0. Á÷°¢»ï°¢ÇüÀÇ °æ¿ì ±â¿ï±â°¡ 0À¸·Î ³ª¿Í ¿À·ù°¡ »ı±æ ¼ö ÀÖÀ¸¹Ç·Î µû·Î Ã³¸® (Á÷°¢»ï°¢ÇüÀº ºøº¯ÀÇ ÁßÁ¡ÀÌ ¿Ü½É)
-	 * 1. °¢ ¼öÁ÷ÀÌµîºĞ¼±¿¡ ÁßÁ¡À» ´ëÀÔÇØ b1, b2¿¡ ´ëÇØ Á¤¸®
-	 * 2. µÎ ¼öÁ÷ÀÌµîºĞ¼±À» ¿¬¸³ÇØ x¿¡ ´ëÇØ Á¤¸® ÈÄ b1, b2 ´ëÀÔ => x µµÃâ
-	 * 3. (1)¿¡¼­ ³ª¿Â b1, b2¿Í (2)¿¡¼­ ³ª¿Â x¸¦ p1p2ÀÇ ¼öÁ÷ÀÌµîºĞ¼±¿¡ ´ëÀÔ => y µµÃâ
+	 * ê³„ì‚° ì ˆì°¨
+	 * 0. ì§ê°ì‚¼ê°í˜•ì˜ ê²½ìš° ê¸°ìš¸ê¸°ê°€ 0ìœ¼ë¡œ ë‚˜ì™€ ì˜¤ë¥˜ê°€ ìƒê¸¸ ìˆ˜ ìˆìœ¼ë¯€ë¡œ ë”°ë¡œ ì²˜ë¦¬ (ì§ê°ì‚¼ê°í˜•ì€ ë¹—ë³€ì˜ ì¤‘ì ì´ ì™¸ì‹¬)
+	 * 1. ê° ìˆ˜ì§ì´ë“±ë¶„ì„ ì— ì¤‘ì ì„ ëŒ€ì…í•´ b1, b2ì— ëŒ€í•´ ì •ë¦¬
+	 * 2. ë‘ ìˆ˜ì§ì´ë“±ë¶„ì„ ì„ ì—°ë¦½í•´ xì— ëŒ€í•´ ì •ë¦¬ í›„ b1, b2 ëŒ€ì… => x ë„ì¶œ
+	 * 3. (1)ì—ì„œ ë‚˜ì˜¨ b1, b2ì™€ (2)ì—ì„œ ë‚˜ì˜¨ xë¥¼ p1p2ì˜ ìˆ˜ì§ì´ë“±ë¶„ì„ ì— ëŒ€ì… => y ë„ì¶œ
 	 */
 
-	// °¢ º¯ÀÇ º¯È­·® °è»ê
+	// ê° ë³€ì˜ ë³€í™”ëŸ‰ ê³„ì‚°
 	float DX1 = P2.X - P1.X, DX2 = P3.X - P2.X, DX3 = P1.X - P3.X;
 	float DY1 = P2.Y - P1.Y, DY2 = P3.Y - P2.Y, DY3 = P1.Y - P3.Y;
 
-	// 0À¸·Î ³ª´©´Â °æ¿ì¸¦ ÇÇÇÏ±â À§ÇØ ±â¿ï±â¸¦ ¹Ù·Î °è»êÇÏÁö ¾Ê°í °¢°¢ ºñ±³
+	// 0ìœ¼ë¡œ ë‚˜ëˆ„ëŠ” ê²½ìš°ë¥¼ í”¼í•˜ê¸° ìœ„í•´ ê¸°ìš¸ê¸°ë¥¼ ë°”ë¡œ ê³„ì‚°í•˜ì§€ ì•Šê³  ê°ê° ë¹„êµ
 	bool bIsM1Zero = DX1 == 0 || DY1 == 0;
 	bool bIsM2Zero = DX2 == 0 || DY2 == 0;
 	bool bIsM3Zero = DX3 == 0 || DY3 == 0;
 
-	// 0. Á÷°¢»ï°¢ÇüÀÇ °æ¿ì ±â¿ï±â°¡ 0À¸·Î ³ª¿Í ¿À·ù°¡ »ı±æ ¼ö ÀÖÀ¸¹Ç·Î µû·Î Ã³¸®
+	// 0. ì§ê°ì‚¼ê°í˜•ì˜ ê²½ìš° ê¸°ìš¸ê¸°ê°€ 0ìœ¼ë¡œ ë‚˜ì™€ ì˜¤ë¥˜ê°€ ìƒê¸¸ ìˆ˜ ìˆìœ¼ë¯€ë¡œ ë”°ë¡œ ì²˜ë¦¬
 	int8 ZeroSlopeCount = bIsM1Zero + bIsM2Zero + bIsM3Zero;
 	if (ZeroSlopeCount >= 2)
 	{
@@ -64,7 +64,7 @@ void StrawTriangle::CalculateCircumcircle()
 		FVector2D A = P1, B = P2, C = P3;
 		bool bIsSlopeDirty = true;
 
-		// ¸¸¾à ¼±ºĞ p1p2 ¶Ç´Â p2p3ÀÇ ±â¿ï±â°¡ 0ÀÏ °æ¿ì °è»êÀÌ Á¦´ë·Î ÀÌ·ïÁöÁö ¾ÊÀ¸¹Ç·Î ³ª¸ÓÁö µÎ ¼±ºĞÀ» »ç¿ëÇÏµµ·Ï ¼³Á¤
+		// ë§Œì•½ ì„ ë¶„ p1p2 ë˜ëŠ” p2p3ì˜ ê¸°ìš¸ê¸°ê°€ 0ì¼ ê²½ìš° ê³„ì‚°ì´ ì œëŒ€ë¡œ ì´ë¤„ì§€ì§€ ì•Šìœ¼ë¯€ë¡œ ë‚˜ë¨¸ì§€ ë‘ ì„ ë¶„ì„ ì‚¬ìš©í•˜ë„ë¡ ì„¤ì •
 		if (bIsM1Zero)
 		{
 			A = P2;
@@ -91,16 +91,16 @@ void StrawTriangle::CalculateCircumcircle()
 		FVector2D MedianOfAB = (A + B) / 2;
 		FVector2D MedianOfBC = (B + C) / 2;
 
-		float M1 = DY1 / DX1;	// p1p2 ¼öÁ÷ÀÌµîºĞ¼±ÀÇ ±â¿ï±â
-		float M2 = DY2 / DX2;	// p2p3 ¼öÁ÷ÀÌµîºĞ¼±ÀÇ ±â¿ï±â
-		float MP1 = -(1 / M1);	// M1°ú °öÇßÀ» ¶§ -1ÀÌ µÇ´Â ¼ö
-		float MP2 = -(1 / M2);	// M2¿Í °öÇßÀ» ¶§ -1ÀÌ µÇ´Â ¼ö
-		float B1 = MedianOfAB.Y - MP1 * MedianOfAB.X;	// y = m'1x + b1ÀÇ b1
-		float B2 = MedianOfBC.Y - MP2 * MedianOfBC.X;	// y = m'2x + b2ÀÇ b2
+		float M1 = DY1 / DX1;	// p1p2 ìˆ˜ì§ì´ë“±ë¶„ì„ ì˜ ê¸°ìš¸ê¸°
+		float M2 = DY2 / DX2;	// p2p3 ìˆ˜ì§ì´ë“±ë¶„ì„ ì˜ ê¸°ìš¸ê¸°
+		float MP1 = -(1 / M1);	// M1ê³¼ ê³±í–ˆì„ ë•Œ -1ì´ ë˜ëŠ” ìˆ˜
+		float MP2 = -(1 / M2);	// M2ì™€ ê³±í–ˆì„ ë•Œ -1ì´ ë˜ëŠ” ìˆ˜
+		float B1 = MedianOfAB.Y - MP1 * MedianOfAB.X;	// y = m'1x + b1ì˜ b1
+		float B2 = MedianOfBC.Y - MP2 * MedianOfBC.X;	// y = m'2x + b2ì˜ b2
 		float B2SubB1 = B2 - B1;
 		float MP1SubMP2 = MP1 - MP2;
 		
-		// °è»ê ÀıÂ÷¸¦ °ÅÃÄ ³ª¿Â ¹æÁ¤½Ä¿¡ °ª ´ëÀÔ
+		// ê³„ì‚° ì ˆì°¨ë¥¼ ê±°ì³ ë‚˜ì˜¨ ë°©ì •ì‹ì— ê°’ ëŒ€ì…
 		float X = B2SubB1 / MP1SubMP2;	// x = (b2 - b1) / (m'1 - m'2)
 		float Y = MP1 * X + B1;	// y = m'1x + b1
 
@@ -116,13 +116,13 @@ float StrawTriangle::GetArea() const
 }
 
 /// <summary>
-/// ÁÖ¾îÁø Point°¡ »ï°¢Çü ³»ºÎ¿¡ ÀÖ´ÂÁö ¿©ºÎ ¹İÈ¯
+/// ì£¼ì–´ì§„ Pointê°€ ì‚¼ê°í˜• ë‚´ë¶€ì— ìˆëŠ”ì§€ ì—¬ë¶€ ë°˜í™˜
 /// </summary>
 /// <param name="Point"></param>
 /// <returns></returns>
 bool StrawTriangle::IsTriangleContainingPoint(FVector2D Point) const
 {
-	//»ï°¢Çü p1p2p3ÀÌ ÀÖÀ» ¶§, »ï°¢Çü p1p2p, p1p3p, p2p3pÀÇ ³ĞÀÌÀÇ ÇÕÀÌ »ï°¢Çü p1p2p3ÀÇ ³ĞÀÌ¿Í °°ÀºÁö È®ÀÎÇØ ³»ºÎ ¿©ºÎ ÆÇº°
+	//ì‚¼ê°í˜• p1p2p3ì´ ìˆì„ ë•Œ, ì‚¼ê°í˜• p1p2p, p1p3p, p2p3pì˜ ë„“ì´ì˜ í•©ì´ ì‚¼ê°í˜• p1p2p3ì˜ ë„“ì´ì™€ ê°™ì€ì§€ í™•ì¸í•´ ë‚´ë¶€ ì—¬ë¶€ íŒë³„
 	StrawTriangle Triangle1(P1, P2, Point, false);
 	StrawTriangle Triangle2(P1, P3, Point, false);
 	StrawTriangle Triangle3(P2, P3, Point, false);
@@ -131,7 +131,7 @@ bool StrawTriangle::IsTriangleContainingPoint(FVector2D Point) const
 }
 
 /// <summary>
-/// ÁÖ¾îÁø Point°¡ »ï°¢ÇüÀÇ ¿ÜÁ¢¿ø ³»ºÎ¿¡ ÀÖ´ÂÁö ¿©ºÎ ¹İÈ¯
+/// ì£¼ì–´ì§„ Pointê°€ ì‚¼ê°í˜•ì˜ ì™¸ì ‘ì› ë‚´ë¶€ì— ìˆëŠ”ì§€ ì—¬ë¶€ ë°˜í™˜
 /// </summary>
 /// <param name="Point"></param>
 /// <returns></returns>

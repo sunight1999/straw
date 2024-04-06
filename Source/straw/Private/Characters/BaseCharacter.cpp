@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Characters/BaseCharacter.h"
@@ -19,14 +19,14 @@ ABaseCharacter::ABaseCharacter()
 	CameraArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraArm"));
 	CameraArm->SetupAttachment(GetRootComponent());
 	CameraArm->TargetArmLength = 300.f;
-	CameraArm->bUsePawnControlRotation = true;	// Ä³¸¯ÅÍ¿Í ÄÁÆ®·Ñ·¯ÀÇ È¸ÀüÀ» º°°³·Î ±¸ºĞ
+	CameraArm->bUsePawnControlRotation = true;	// ìºë¦­í„°ì™€ ì»¨íŠ¸ë¡¤ëŸ¬ì˜ íšŒì „ì„ ë³„ê°œë¡œ êµ¬ë¶„
 
 	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
 	ViewCamera->SetupAttachment(CameraArm);
 
 	DrawingAbilityComponent = CreateDefaultSubobject<UDrawingAbilityComponent>(TEXT("DrawingAbilityComponent"));
 
-	GetCharacterMovement()->bOrientRotationToMovement = true;	// Ä³¸¯ÅÍ¸¦ ¿òÁ÷ÀÌ°í ÀÖ´Â ¹æÇâÀ¸·Î È¸Àü
+	GetCharacterMovement()->bOrientRotationToMovement = true;	// ìºë¦­í„°ë¥¼ ì›€ì§ì´ê³  ìˆëŠ” ë°©í–¥ìœ¼ë¡œ íšŒì „
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 400.f, 0.f);
 }
 
@@ -120,7 +120,7 @@ void ABaseCharacter::ReadyAbility()
 		OriginTargetArmLength = CameraArm->TargetArmLength;
 		CameraArm->TargetArmLength = 0.f;
 
-		/* Triagulator Å×½ºÆ®¿ë
+		/* Triagulator í…ŒìŠ¤íŠ¸ìš©
 		StrawTriangle Tri(FVector2D(0, 1), FVector2D(3, 1), FVector2D(3, -1));
 		FVector2D CircumCenter = Tri.GetCircumcircleCenter();
 		DrawDebugCircle(GetWorld(), FVector(0, CircumCenter.X, CircumCenter.Y), sqrt(Tri.GetSquaredCircumcircleRadius()), 50, FColor::Green, true);
