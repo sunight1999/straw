@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Characters/BaseCharacter.h"
@@ -6,7 +6,6 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Abilities/DrawingAbilityComponent.h"
-#include "Math/StrawTriangle.h"
 
 ABaseCharacter::ABaseCharacter()
 {
@@ -112,24 +111,11 @@ void ABaseCharacter::LookUp(float Value)
 
 void ABaseCharacter::ReadyAbility()
 {
-	
-
 	if (!bReadyAbility)
 	{
 		GetMesh()->SetVisibility(false);
 		OriginTargetArmLength = CameraArm->TargetArmLength;
 		CameraArm->TargetArmLength = 0.f;
-
-		/* Triagulator 테스트용
-		StrawTriangle Tri(FVector2D(0, 1), FVector2D(3, 1), FVector2D(3, -1));
-		FVector2D CircumCenter = Tri.GetCircumcircleCenter();
-		DrawDebugCircle(GetWorld(), FVector(0, CircumCenter.X, CircumCenter.Y), sqrt(Tri.GetSquaredCircumcircleRadius()), 50, FColor::Green, true);
-		DrawDebugPoint(GetWorld(), FVector(0, CircumCenter.X, CircumCenter.Y), 4, FColor::Black, true);
-		DrawDebugPoint(GetWorld(), FVector(0, 0, 1), 4, FColor::Black, true);
-		DrawDebugPoint(GetWorld(), FVector(0, 3, 1), 4, FColor::Black, true);
-		DrawDebugPoint(GetWorld(), FVector(0, 3, -1), 4, FColor::Black, true);
-		*/
-
 	}
 
 	bReadyAbility = true;

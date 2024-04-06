@@ -1,11 +1,11 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Abilities/DrawingActualizer.h"
 #include "ProceduralMeshComponent.h"
 #include "KismetProceduralMeshLibrary.h"
 #include "Math/Triangulator.h"
-#include "Math/StrawTriangle.h"
+#include "Math/IndexedTriangle.h"
 
 // Sets default values
 ADrawingActualizer::ADrawingActualizer()
@@ -16,6 +16,11 @@ ADrawingActualizer::ADrawingActualizer()
 	ProcMeshComponent = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("ProcMeshComponent"));
 	ProcMeshComponent->bUseComplexAsSimpleCollision = false;
 	//ProcMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+	UVs.Add(FVector2D(0, 0));
+	UVs.Add(FVector2D(0, 1));
+	UVs.Add(FVector2D(1, 0));
+	UVs.Add(FVector2D(1, 1));
 }
 
 // Called when the game starts or when spawned
@@ -36,38 +41,103 @@ void ADrawingActualizer::Tick(float DeltaTime)
 /// 평면에 그린 그림을 3D로 실체화
 /// </summary>
 /// <param name="DrawingVertices">끊김이 없는 선 vertex array</param>
+/// <param name="DrawingPlaneBox">그림을 그린 평면을 감싸는 Box</param>
 /// <param name="DrawingPlaneRotation">그림을 그린 평면의 Rotation 값</param>
+/// <param name="ActualizationThickness">실체화된 오브젝트의 두께</param>
 /// <param name="MeshMaterial">실체화된 오브젝트에 적용할 Material</param>
-void ADrawingActualizer::Actualize2D(TArray<FVector> DrawingVertices, FBox DrawingPlaneBox, FRotator DrawingPlaneRotation, UMaterialInterface* MeshMaterial)
+void ADrawingActualizer::Actualize2D(TArray<FVector> DrawingVertices, FBox DrawingPlaneBox, FRotator DrawingPlaneRotation, float ActualizationThickness, UMaterialInterface* MeshMaterial)
 {
 	Material = MeshMaterial;
 
 	// 1. 회전되어 있는 그림을 정면(x축)을 바라보도록 회전시켜 2차원(y, z)으로 축소
 	for (int i = 0; i < DrawingVertices.Num(); i++)
 	{
-		DrawingVertices[i] = DrawingPlaneRotation.UnrotateVector(DrawingVertices[i]);
+		Vertices.Add(DrawingPlaneRotation.UnrotateVector(DrawingVertices[i]));
 	}
 
 	// 2. 들로네 삼각분할 수행
-	TArray<FVector2D> DrawingVertices2D;
-	for (FVector Vertex : DrawingVertices)
+	TArray<IndexedTriangle> UselessTriangles;
+	Triangles = Triangulator::Triangulate2D(DrawingPlaneBox, Vertices, UselessTriangles);
+
+	for (int i = 0; i < Triangles.Num(); i += 3)
 	{
-		DrawingVertices2D.Add(FVector2D(Vertex.Y, Vertex.Z));
-		DrawDebugPoint(GetWorld(), FVector(0, Vertex.Y, Vertex.Z), 3, FColor::Black, true);
+		DrawDebugLine(GetWorld(), Vertices[Triangles[i]], Vertices[Triangles[i + 1]], FColor::Red, true);
+		DrawDebugLine(GetWorld(), Vertices[Triangles[i + 1]], Vertices[Triangles[i + 2]], FColor::Red, true);
+		DrawDebugLine(GetWorld(), Vertices[Triangles[i + 2]], Vertices[Triangles[i]], FColor::Red, true);
 	}
 
-	TArray<StrawTriangle> Triangles3D = Triangulator::Triangulate2D(DrawingPlaneBox, DrawingVertices2D);
-	for (StrawTriangle Triangle : Triangles3D)
+	for (int i = 0; i < UselessTriangles.Num(); i++)
 	{
-		DrawDebugLine(GetWorld(), FVector(0, Triangle.GetP1().X, Triangle.GetP1().Y), FVector(0, Triangle.GetP2().X, Triangle.GetP2().Y), FColor::Red, true);
-		DrawDebugLine(GetWorld(), FVector(0, Triangle.GetP2().X, Triangle.GetP2().Y), FVector(0, Triangle.GetP3().X, Triangle.GetP3().Y), FColor::Red, true);
-		DrawDebugLine(GetWorld(), FVector(0, Triangle.GetP3().X, Triangle.GetP3().Y), FVector(0, Triangle.GetP1().X, Triangle.GetP1().Y), FColor::Red, true);
+		FVector2D A = (UselessTriangles[i].GetP1() + UselessTriangles[i].GetP2()) / 2;
+		FVector2D B = (UselessTriangles[i].GetP2() + UselessTriangles[i].GetP3()) / 2;
+		FVector2D C = (UselessTriangles[i].GetP3() + UselessTriangles[i].GetP1()) / 2;
+		FVector AA(0, A.X, A.Y);
+		FVector BB(0, B.X, B.Y);
+		FVector CC(0, C.X, C.Y);
+
+		DrawDebugPoint(GetWorld(), AA, 2, FColor::Green, true);
+		DrawDebugPoint(GetWorld(), BB, 2, FColor::Green, true);
+		DrawDebugPoint(GetWorld(), CC, 2, FColor::Green, true);
+		DrawDebugLine(GetWorld(), FVector(0, UselessTriangles[i].GetP1().X, UselessTriangles[i].GetP1().Y), FVector(0, UselessTriangles[i].GetP2().X, UselessTriangles[i].GetP2().Y), FColor::Blue, true, 0, 0, 1.f);
+		DrawDebugLine(GetWorld(), FVector(0, UselessTriangles[i].GetP2().X, UselessTriangles[i].GetP2().Y), FVector(0, UselessTriangles[i].GetP3().X, UselessTriangles[i].GetP3().Y), FColor::Blue, true, 0, 0, 1.f);
+		DrawDebugLine(GetWorld(), FVector(0, UselessTriangles[i].GetP3().X, UselessTriangles[i].GetP2().Y), FVector(0, UselessTriangles[i].GetP1().X, UselessTriangles[i].GetP1().Y), FColor::Blue, true, 0, 0, 1.f);
 	}
 
-	// 3. 그림을 벗어나는 삼각형 제거
-	// 4. DrawingVertices에 x 값을 더해 뒷면 Vertex 정보 추가
-	// 5. 옆면 삼각분할 수행
-	// 6. 생성된 object에 원래 회전값 적용
+	// 3. 들로네 삼각분할로 얻은 면 정보에 두께 값(x축)만 더해 뒷면 mesh 정보 추가
+	int32 OriginVerticesNum = Vertices.Num();
+	for (int i = 0; i < OriginVerticesNum; i++)
+	{
+		Vertices.Add(FVector(Vertices[i].X + ActualizationThickness, Vertices[i].Y, Vertices[i].Z));
+	}
+
+	int32 OriginTriangleIndicesNum = Triangles.Num();
+	for (int i = 0; i < OriginTriangleIndicesNum; i++)
+	{
+		Triangles.Add(Triangles[i] + OriginVerticesNum);
+	}
+	
+	// 4. 옆면 삼각분할 수행
+	/*
+	for (int i = 0; i < OriginVerticesNum - 1; i++)
+	{
+		Triangles.Add(i);
+		Triangles.Add(i + OriginVerticesNum);
+		Triangles.Add(i + 1);
+
+		Triangles.Add(i + 1);
+		Triangles.Add(i + OriginVerticesNum);
+		Triangles.Add(i + OriginVerticesNum + 1);
+	}
+
+	Triangles.Add(OriginVerticesNum - 1);
+	Triangles.Add(OriginVerticesNum * 2 - 1);
+	Triangles.Add(0);
+
+	Triangles.Add(0);
+	Triangles.Add(OriginVerticesNum * 2 - 1);
+	Triangles.Add(OriginVerticesNum);
+	*/
+
+	for (int i = 0; i < OriginVerticesNum - 1; i++)
+	{
+		Triangles.Add(i + 1);
+		Triangles.Add(i + OriginVerticesNum);
+		Triangles.Add(i);
+
+		Triangles.Add(i + OriginVerticesNum + 1);
+		Triangles.Add(i + OriginVerticesNum);
+		Triangles.Add(i + 1);
+	}
+
+	Triangles.Add(0);
+	Triangles.Add(OriginVerticesNum * 2 - 1);
+	Triangles.Add(OriginVerticesNum - 1);
+
+	Triangles.Add(OriginVerticesNum);
+	Triangles.Add(OriginVerticesNum * 2 - 1);
+	Triangles.Add(0);
+
+	// 5. 생성된 object에 원래 회전값 적용
 
 	/*
 	for (int i = 0; i < DrawingVertices.Num(); i++)
@@ -83,9 +153,9 @@ void ADrawingActualizer::Actualize2D(TArray<FVector> DrawingVertices, FBox Drawi
 	}
 	*/
 
-	/*ProcMeshComponent->CreateMeshSection(0, Vertices, Triangles, TArray<FVector>(), UVs, TArray<FColor>(), TArray<FProcMeshTangent>(), true);
+	ProcMeshComponent->CreateMeshSection(0, Vertices, Triangles, TArray<FVector>(), UVs, TArray<FColor>(), TArray<FProcMeshTangent>(), true);
 	if (Material)
 	{
 		ProcMeshComponent->SetMaterial(0, Material);
-	}*/
+	}
 }
