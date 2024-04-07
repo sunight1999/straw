@@ -56,7 +56,12 @@ TArray<int32> Triangulator::Triangulate2D(FBox DrawingPlaneBox, TArray<FVector> 
 		}
 	}
 
-	// 4. Vertices가 그리는 면 밖을 벗어나는 삼각형 제거
+	// 4. Vertices2D에서 삼각분할을 위해 임시로 추가했던 Super Triangle 정보 제거
+	Vertices2D.RemoveAt(Vertices2D.Num() - 1);
+	Vertices2D.RemoveAt(Vertices2D.Num() - 1);
+	Vertices2D.RemoveAt(Vertices2D.Num() - 1);
+
+	// 5. Vertices가 그리는 면 밖을 벗어나는 삼각형 제거
 	for (int i = Triangles.Num() - 1; i >= 0; i--)
 	{
 		const IndexedTriangle& Triangle = Triangles[i];
@@ -64,12 +69,12 @@ TArray<int32> Triangulator::Triangulate2D(FBox DrawingPlaneBox, TArray<FVector> 
 			!IsPointInsidePolygon(Vertices2D, (Triangle.GetP2() + Triangle.GetP3()) / 2) ||
 			!IsPointInsidePolygon(Vertices2D, (Triangle.GetP3() + Triangle.GetP1()) / 2))
 		{
-			// Triangles.RemoveAt(i);
 			OutUselessTriangles.Add(Triangle);
+			//Triangles.RemoveAt(i);
 		}
 	}
 
-	// 5. 삼각형을 Vertex의 인덱스로 표현해서 반환
+	// 6. 삼각형을 Vertex의 인덱스로 표현해서 반환
 	TArray<int32> TriangleIndices;
 	for (const IndexedTriangle& Triangle : Triangles)
 	{
@@ -145,15 +150,21 @@ bool Triangulator::IsPointInsidePolygon(const TArray<FVector2D>& PolygonVertices
 {
 	// Point에서 오른쪽으로 가상의 반직선을 긋고, 해당 반직선이 다각형의 변과 몇 변 교차하는지 확인 -> 홀수면 내부
 	int32 CrossedCount = 0;
-	for (int i = 0; i < PolygonVertices.Num() - 1; i++)
+	for (int i = 0; i < PolygonVertices.Num(); i++)
 	{
+		int32 NextPolygonVertexIndex = i + 1;
+		if (i + 1 == PolygonVertices.Num())
+		{
+			NextPolygonVertexIndex = 0;
+		}
+
 		FVector2D P1 = PolygonVertices[i];
-		FVector2D P2 = PolygonVertices[i + 1];
+		FVector2D P2 = PolygonVertices[NextPolygonVertexIndex];
 
 		// 방향을 계산할 때 일관성을 위해 항상 P1이 P2 위에 있도록 설정
 		if (P1.Y < P2.Y)
 		{
-			P1 = PolygonVertices[i + 1];
+			P1 = PolygonVertices[NextPolygonVertexIndex];
 			P2 = PolygonVertices[i];
 		}
 

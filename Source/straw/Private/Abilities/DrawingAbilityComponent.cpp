@@ -55,6 +55,7 @@ void UDrawingAbilityComponent::StartDrawing()
 	const FVector CameraForwardVector = OwnerCharacter->GetCameraForwardVector(&CameraRotation, true);
 	FVector NewLocation = OwnerCharacter->GetActorLocation() + CameraForwardVector * DrawingCollisionDistance;
 	NewLocation.Z = DrawingCollisionHeight;
+	CameraRotation.Pitch = 0.f;
 
 	DrawingCollision->SetWorldLocationAndRotation(NewLocation, CameraRotation);
 	DrawingCollision->bHiddenInGame = false;
@@ -123,7 +124,7 @@ void UDrawingAbilityComponent::EndDrawing()
 	bDrawing = false;
 	
 	// DrawingActualizer에 선 버텍스 정보를 전달해 오브젝트 생성 요청
-	ADrawingActualizer* DrawingActualizer = GetWorld()->SpawnActor<ADrawingActualizer>(ADrawingActualizer::StaticClass(), GetOwner()->GetActorLocation(), FQuat::Identity.Rotator());
+	ADrawingActualizer* DrawingActualizer = GetWorld()->SpawnActor<ADrawingActualizer>(ADrawingActualizer::StaticClass(), FVector::ZeroVector, DrawingCollision->GetComponentRotation());
 	DrawingActualizer->Actualize2D(SplinePoints, DrawingCollision->Bounds.GetBox(), DrawingCollision->GetComponentRotation(), ActualizedObjectThickness, ActualizedObjectMaterial);
 }
 

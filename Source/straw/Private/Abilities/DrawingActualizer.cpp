@@ -15,7 +15,9 @@ ADrawingActualizer::ADrawingActualizer()
 
 	ProcMeshComponent = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("ProcMeshComponent"));
 	ProcMeshComponent->bUseComplexAsSimpleCollision = false;
-	//ProcMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	ProcMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	ProcMeshComponent->SetSimulatePhysics(true);
+	ProcMeshComponent->SetMassScale(NAME_None, 1000.f);
 
 	UVs.Add(FVector2D(0, 0));
 	UVs.Add(FVector2D(0, 1));
@@ -55,10 +57,22 @@ void ADrawingActualizer::Actualize2D(TArray<FVector> DrawingVertices, FBox Drawi
 		Vertices.Add(DrawingPlaneRotation.UnrotateVector(DrawingVertices[i]));
 	}
 
+	/* 테스트용
+	Vertices.Empty();
+	Vertices.Add(FVector(0, -50, -50));
+	Vertices.Add(FVector(0, -50, 50));
+	Vertices.Add(FVector(0, 50, 50));
+	Vertices.Add(FVector(0, 30, 25));
+	//Vertices.Add(FVector(0, 40, -12.5));
+	Vertices.Add(FVector(0, 50, -50));
+	Vertices.Add(FVector(0, 30, -25));
+	*/
+
 	// 2. 들로네 삼각분할 수행
 	TArray<IndexedTriangle> UselessTriangles;
 	Triangles = Triangulator::Triangulate2D(DrawingPlaneBox, Vertices, UselessTriangles);
 
+	/* 삼각분할 라인 테스트용
 	for (int i = 0; i < Triangles.Num(); i += 3)
 	{
 		DrawDebugLine(GetWorld(), Vertices[Triangles[i]], Vertices[Triangles[i + 1]], FColor::Red, true);
@@ -78,10 +92,11 @@ void ADrawingActualizer::Actualize2D(TArray<FVector> DrawingVertices, FBox Drawi
 		DrawDebugPoint(GetWorld(), AA, 2, FColor::Green, true);
 		DrawDebugPoint(GetWorld(), BB, 2, FColor::Green, true);
 		DrawDebugPoint(GetWorld(), CC, 2, FColor::Green, true);
-		DrawDebugLine(GetWorld(), FVector(0, UselessTriangles[i].GetP1().X, UselessTriangles[i].GetP1().Y), FVector(0, UselessTriangles[i].GetP2().X, UselessTriangles[i].GetP2().Y), FColor::Blue, true, 0, 0, 1.f);
-		DrawDebugLine(GetWorld(), FVector(0, UselessTriangles[i].GetP2().X, UselessTriangles[i].GetP2().Y), FVector(0, UselessTriangles[i].GetP3().X, UselessTriangles[i].GetP3().Y), FColor::Blue, true, 0, 0, 1.f);
-		DrawDebugLine(GetWorld(), FVector(0, UselessTriangles[i].GetP3().X, UselessTriangles[i].GetP2().Y), FVector(0, UselessTriangles[i].GetP1().X, UselessTriangles[i].GetP1().Y), FColor::Blue, true, 0, 0, 1.f);
+		DrawDebugLine(GetWorld(), FVector(0, UselessTriangles[i].GetP1().X, UselessTriangles[i].GetP1().Y), FVector(0, UselessTriangles[i].GetP2().X, UselessTriangles[i].GetP2().Y), FColor::Blue, true);
+		DrawDebugLine(GetWorld(), FVector(0, UselessTriangles[i].GetP2().X, UselessTriangles[i].GetP2().Y), FVector(0, UselessTriangles[i].GetP3().X, UselessTriangles[i].GetP3().Y), FColor::Blue, true);
+		DrawDebugLine(GetWorld(), FVector(0, UselessTriangles[i].GetP3().X, UselessTriangles[i].GetP3().Y), FVector(0, UselessTriangles[i].GetP1().X, UselessTriangles[i].GetP1().Y), FColor::Blue, true);
 	}
+	*/
 
 	// 3. 들로네 삼각분할로 얻은 면 정보에 두께 값(x축)만 더해 뒷면 mesh 정보 추가
 	int32 OriginVerticesNum = Vertices.Num();
@@ -97,27 +112,6 @@ void ADrawingActualizer::Actualize2D(TArray<FVector> DrawingVertices, FBox Drawi
 	}
 	
 	// 4. 옆면 삼각분할 수행
-	/*
-	for (int i = 0; i < OriginVerticesNum - 1; i++)
-	{
-		Triangles.Add(i);
-		Triangles.Add(i + OriginVerticesNum);
-		Triangles.Add(i + 1);
-
-		Triangles.Add(i + 1);
-		Triangles.Add(i + OriginVerticesNum);
-		Triangles.Add(i + OriginVerticesNum + 1);
-	}
-
-	Triangles.Add(OriginVerticesNum - 1);
-	Triangles.Add(OriginVerticesNum * 2 - 1);
-	Triangles.Add(0);
-
-	Triangles.Add(0);
-	Triangles.Add(OriginVerticesNum * 2 - 1);
-	Triangles.Add(OriginVerticesNum);
-	*/
-
 	for (int i = 0; i < OriginVerticesNum - 1; i++)
 	{
 		Triangles.Add(i + 1);
@@ -136,24 +130,10 @@ void ADrawingActualizer::Actualize2D(TArray<FVector> DrawingVertices, FBox Drawi
 	Triangles.Add(OriginVerticesNum);
 	Triangles.Add(OriginVerticesNum * 2 - 1);
 	Triangles.Add(0);
-
-	// 5. 생성된 object에 원래 회전값 적용
-
-	/*
-	for (int i = 0; i < DrawingVertices.Num(); i++)
-	{
-		if (i + 1 == DrawingVertices.Num())
-		{
-			DrawDebugLine(GetWorld(), DrawingVertices[i-1], DrawingVertices[i], FColor::Red, true);
-		}
-		else
-		{
-			DrawDebugLine(GetWorld(), DrawingVertices[i], DrawingVertices[i + 1], FColor::Red, true);
-		}
-	}
-	*/
 
 	ProcMeshComponent->CreateMeshSection(0, Vertices, Triangles, TArray<FVector>(), UVs, TArray<FColor>(), TArray<FProcMeshTangent>(), true);
+	ProcMeshComponent->AddCollisionConvexMesh(Vertices);
+
 	if (Material)
 	{
 		ProcMeshComponent->SetMaterial(0, Material);
