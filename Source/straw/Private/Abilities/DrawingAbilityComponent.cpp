@@ -58,6 +58,7 @@ void UDrawingAbilityComponent::StartDrawing()
 	CameraRotation.Pitch = 0.f;
 
 	DrawingCollision->SetWorldLocationAndRotation(NewLocation, CameraRotation);
+	DrawingCollision->SetVisibility(true);
 	DrawingCollision->bHiddenInGame = false;
 
 	// 이전 Drawing 정보 초기화
@@ -147,6 +148,7 @@ void UDrawingAbilityComponent::AddPoint(FVector Point, bool bForceDraw)
 /// </summary>
 void UDrawingAbilityComponent::EndDrawing()
 {
+	DrawingCollision->SetVisibility(false);
 	DrawingCollision->bHiddenInGame = true;
 	bDrawing = false;
 	
