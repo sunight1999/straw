@@ -98,6 +98,33 @@ void UDrawingAbilityComponent::AddPoint()
 }
 
 /// <summary>
+/// Point 추가 간격과 별개로 ImpactPoint를 계속 반환하여 이펙트 Point를 지정할 수 있도록 함
+/// </summary>
+/// <param name="OutImpactPoint">Drawing Collision 충돌 지점</param>
+/// <returns>충돌점 존재 여부</returns>
+bool UDrawingAbilityComponent::AddPointDirty(FVector& OutImpactPoint)
+{
+	FHitResult OutHit;
+
+	FVector StartPosition = OwnerCharacter->GetActorLocation();
+	FVector EndPosition = StartPosition + DrawingCollisionDistance * 10.f * OwnerCharacter->GetCameraForwardVector(nullptr, true);
+
+	if (GetWorld()->LineTraceSingleByChannel(OutHit, StartPosition, EndPosition, ECC_GameTraceChannel1))
+	{
+		OutImpactPoint = OutHit.ImpactPoint;
+
+		if (DrawingTick > DrawingInterval)
+		{
+			AddPoint(OutHit.ImpactPoint, true);
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+/// <summary>
 /// 선을 구성할 새로운 점 추가
 /// </summary>
 /// <param name="Point">새로운 점 Vector 정보</param>

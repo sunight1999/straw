@@ -44,9 +44,16 @@ void ABaseCharacter::Tick(float DeltaTime)
 
 	if (bReadyAbility && bUsingAbility)
 	{
-		DrawingAbilityComponent->AddPoint();
-
-
+		FVector ImpactPoint;
+		if (DrawingAbilityComponent->AddPointDirty(ImpactPoint))
+		{
+			// 먹 이펙트 재생
+			if (!AbilityEffectComponent->IsActive() && AbilityEffectComponent->GetAsset())
+			{
+				AbilityEffectComponent->Activate();
+			}
+			AbilityEffectComponent->SetVariablePosition(FName("SpawnPosition"), ImpactPoint);
+		}
 	}
 }
 
@@ -162,12 +169,6 @@ void ABaseCharacter::UseAbility()
 
 	bUsingAbility = true;
 	DrawingAbilityComponent->StartDrawing();
-
-	// 먹 이펙트 재생
-	if (AbilityEffectComponent->GetAsset())
-	{
-		AbilityEffectComponent->Activate();
-	}
 }
 
 void ABaseCharacter::EndUseAbility()

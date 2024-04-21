@@ -25,6 +25,7 @@ public:
 
 	void StartDrawing();
 	void AddPoint();
+	bool AddPointDirty(FVector& OutImpactPoint);
 	void AddPoint(FVector Point, bool bForceDraw = false);
 	void EndDrawing();
 
