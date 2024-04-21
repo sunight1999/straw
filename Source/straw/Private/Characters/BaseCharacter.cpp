@@ -52,6 +52,8 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAxis(FName("Turn"), this, &ABaseCharacter::Turn);
 	PlayerInputComponent->BindAxis(FName("LookUp"), this, &ABaseCharacter::LookUp);
 	PlayerInputComponent->BindAxis(FName("MoveRight"), this, &ABaseCharacter::MoveRight);
+	PlayerInputComponent->BindAction(FName("Jump"), IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction(FName("Jump"), IE_Released, this, &ACharacter::StopJumping);
 
 	PlayerInputComponent->BindAction(FName("ReadyAbility"), IE_Pressed, this, &ABaseCharacter::ReadyAbility);
 	PlayerInputComponent->BindAction(FName("ReadyAbility"), IE_Released, this, &ABaseCharacter::EndReadyAbility);
@@ -113,7 +115,12 @@ void ABaseCharacter::ReadyAbility()
 {
 	if (!bReadyAbility)
 	{
-		GetMesh()->SetVisibility(false);
+		if (auto MainMesh = Cast<USkeletalMeshComponent>(GetMesh()->GetDefaultSubobjectByName(FName("SkeletalMesh"))))
+		{
+			MainMesh->SetVisibility(false);
+		}
+
+		//GetMesh()->SetVisibility(false);
 		OriginTargetArmLength = CameraArm->TargetArmLength;
 		CameraArm->TargetArmLength = 0.f;
 	}
@@ -130,7 +137,12 @@ void ABaseCharacter::EndReadyAbility()
 
 	bReadyAbility = false;
 
-	GetMesh()->SetVisibility(true);
+	if (auto MainMesh = Cast<USkeletalMeshComponent>(GetMesh()->GetDefaultSubobjectByName(FName("SkeletalMesh"))))
+	{
+		MainMesh->SetVisibility(true);
+	}
+
+	//GetMesh()->SetVisibility(true);
 	CameraArm->TargetArmLength = OriginTargetArmLength;
 }
 
