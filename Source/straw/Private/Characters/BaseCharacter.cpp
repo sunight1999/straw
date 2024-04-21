@@ -4,6 +4,7 @@
 #include "Characters/BaseCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Interacts/Grabber.h"
 #include "Camera/CameraComponent.h"
 #include "NiagaraComponent.h"
 #include "Abilities/DrawingAbilityComponent.h"
@@ -23,6 +24,10 @@ ABaseCharacter::ABaseCharacter()
 
 	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
 	ViewCamera->SetupAttachment(CameraArm);
+
+	//PhysicsHandle = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandle"));
+	Grabber = CreateDefaultSubobject<UGrabber>(TEXT("Grabber"));
+	Grabber->SetupAttachment(GetRootComponent());
 
 	AbilityEffectComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("AbilityEffectComponent"));
 	AbilityEffectComponent->bAutoActivate = false;
@@ -68,6 +73,8 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction(FName("Jump"), IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction(FName("Jump"), IE_Released, this, &ACharacter::StopJumping);
 
+	PlayerInputComponent->BindAction(FName("Grab"), IE_Pressed, this, &ABaseCharacter::TryGrab);
+	PlayerInputComponent->BindAction(FName("Grab"), IE_Released, this, &ABaseCharacter::TryRelease);
 	PlayerInputComponent->BindAction(FName("ReadyAbility"), IE_Pressed, this, &ABaseCharacter::ReadyAbility);
 	PlayerInputComponent->BindAction(FName("ReadyAbility"), IE_Released, this, &ABaseCharacter::EndReadyAbility);
 	PlayerInputComponent->BindAction(FName("UseAbility"), IE_Pressed, this, &ABaseCharacter::UseAbility);
@@ -97,7 +104,6 @@ void ABaseCharacter::MoveForward(float Value)
 {
 	if (Controller && (Value != 0.f))
 	{
-
 		AddMovementInput(GetCameraForwardVector(), Value);
 	}
 }
@@ -124,6 +130,19 @@ void ABaseCharacter::LookUp(float Value)
 	AddControllerPitchInput(Value);
 }
 
+void ABaseCharacter::TryGrab()
+{
+	if (!bReadyAbility)
+	{
+		Grabber->Grab();
+	}
+}
+
+void ABaseCharacter::TryRelease()
+{
+	Grabber->Release();
+}
+
 void ABaseCharacter::ReadyAbility()
 {
 	if (!bReadyAbility)
@@ -140,6 +159,7 @@ void ABaseCharacter::ReadyAbility()
 	}
 
 	bReadyAbility = true;
+	TryRelease();
 }
 
 void ABaseCharacter::EndReadyAbility()

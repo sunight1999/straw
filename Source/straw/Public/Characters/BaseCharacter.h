@@ -8,6 +8,7 @@
 
 class USpringArmComponent;
 class UCameraComponent;
+class UGrabber;
 class UDrawingAbilityComponent;
 class UNiagaraComponent;
 
@@ -33,6 +34,8 @@ protected:
 	void LookUp(float Value);
 
 	/* 능력 사용 관련 */
+	void TryGrab();
+	void TryRelease();
 	void ReadyAbility();
 	void EndReadyAbility();
 	void UseAbility();
@@ -44,6 +47,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* ViewCamera;
+
+	UPROPERTY(VisibleAnywhere)
+	UGrabber* Grabber;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta = (AllowPrivateAccess = "true"))
 	UNiagaraComponent* AbilityEffectComponent;

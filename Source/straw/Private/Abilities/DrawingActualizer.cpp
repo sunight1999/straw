@@ -10,7 +10,7 @@
 // Sets default values
 ADrawingActualizer::ADrawingActualizer()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	ProcMeshComponent = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("ProcMeshComponent"));
@@ -29,7 +29,7 @@ ADrawingActualizer::ADrawingActualizer()
 void ADrawingActualizer::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 // Called every frame
@@ -56,6 +56,17 @@ void ADrawingActualizer::Actualize2D(TArray<FVector> DrawingVertices, FBox Drawi
 	{
 		Vertices.Add(DrawingPlaneRotation.UnrotateVector(DrawingVertices[i]));
 	}
+
+	// 각 포인트 사이의 중점에 포인트를 추가
+	/*for (int i = 0; i < DrawingVertices.Num(); i++)
+	{
+		if (i + 1 < DrawingVertices.Num())
+		{
+			Vertices.Insert((Vertices[i * 2] + Vertices[i * 2 + 1]) / 2, i * 2 + 1);
+		}
+	}*/
+
+	//Vertices.Add(Vertices[0] + Vertices[Vertices.Num() - 1] / 2);
 
 	/* 테스트용
 	Vertices.Empty();
@@ -141,6 +152,7 @@ void ADrawingActualizer::Actualize2D(TArray<FVector> DrawingVertices, FBox Drawi
 
 	ProcMeshComponent->CreateMeshSection(0, Vertices, Triangles, TArray<FVector>(), UVs, TArray<FColor>(), TArray<FProcMeshTangent>(), true);
 	ProcMeshComponent->AddCollisionConvexMesh(Vertices);
+	ProcMeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECollisionResponse::ECR_Block);
 
 	if (Material)
 	{
