@@ -72,14 +72,22 @@ void ADrawingActualizer::Actualize2D(TArray<FVector> DrawingVertices, FBox Drawi
 	TArray<IndexedTriangle> UselessTriangles;
 	Triangles = Triangulator::Triangulate2D(DrawingPlaneBox, Vertices, UselessTriangles);
 
-	/* 삼각분할 라인 테스트용
+	/*for (FVector Point : Vertices)
+	{
+		UE_LOG(LogTemp, Display, TEXT("%f %f %f"), Point.X, Point.Y, Point.Z);
+		DrawDebugPoint(GetWorld(), Point, 3.f, FColor::Blue, true);
+	}
+
+	// 삼각분할 라인 테스트용
 	for (int i = 0; i < Triangles.Num(); i += 3)
 	{
 		DrawDebugLine(GetWorld(), Vertices[Triangles[i]], Vertices[Triangles[i + 1]], FColor::Red, true);
 		DrawDebugLine(GetWorld(), Vertices[Triangles[i + 1]], Vertices[Triangles[i + 2]], FColor::Red, true);
 		DrawDebugLine(GetWorld(), Vertices[Triangles[i + 2]], Vertices[Triangles[i]], FColor::Red, true);
 	}
+	*/
 
+	/*
 	for (int i = 0; i < UselessTriangles.Num(); i++)
 	{
 		FVector2D A = (UselessTriangles[i].GetP1() + UselessTriangles[i].GetP2()) / 2;

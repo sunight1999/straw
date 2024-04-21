@@ -57,7 +57,7 @@ void UDrawingAbilityComponent::StartDrawing()
 	FRotator CameraRotation;
 	const FVector CameraForwardVector = OwnerCharacter->GetCameraForwardVector(&CameraRotation, true);
 	FVector NewLocation = OwnerCharacter->GetActorLocation() + CameraForwardVector * DrawingCollisionDistance;
-	NewLocation.Z = DrawingCollisionHeight;
+	NewLocation.Z += DrawingCollisionHeight;
 	CameraRotation.Pitch = 0.f;
 
 	DrawingCollision->SetWorldLocationAndRotation(NewLocation, CameraRotation);
