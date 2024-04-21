@@ -36,6 +36,9 @@ private:
 	void UpdateSpline();
 
 	UPROPERTY(EditAnywhere, Category = "Drawing Ability")
+	bool bDrawByDistance = true;
+
+	UPROPERTY(EditAnywhere, Category = "Drawing Ability")
 	UBoxComponent* DrawingCollision;
 
 	UPROPERTY(EditAnywhere, Category = "Drawing Ability")
@@ -61,9 +64,15 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Drawing Ability")
 	float ActualizedObjectThickness = 30.f;
 
+	// bDrawByDistance가 false일 때만 사용
 	UPROPERTY(EditAnywhere, Category = "Drawing Ability")
 	float DrawingInterval = 0.04f;
 	float DrawingTick = 0;
+
+	// bDrawByDistance가 true일 때만 사용
+	UPROPERTY(EditAnywhere, Category = "Drawing Ability")
+	float DrawingGap = 15.f;
+	FVector PreviousPoint;
 
 	bool bDrawing;
 

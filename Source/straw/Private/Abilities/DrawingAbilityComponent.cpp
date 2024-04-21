@@ -38,7 +38,10 @@ void UDrawingAbilityComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	
 	if (bDrawing)
 	{
-		DrawingTick += DeltaTime;
+		if (!bDrawByDistance)
+		{
+			DrawingTick += DeltaTime;
+		}
 	}
 }
 
@@ -84,16 +87,35 @@ void UDrawingAbilityComponent::StartDrawing()
 /// </summary>
 void UDrawingAbilityComponent::AddPoint()
 {
-	if (DrawingTick > DrawingInterval)
+	if (!bDrawByDistance)
+	{
+		if (DrawingTick > DrawingInterval)
+		{
+			FHitResult OutHit;
+
+			FVector StartPosition = OwnerCharacter->GetActorLocation();
+			FVector EndPosition = StartPosition + DrawingCollisionDistance * 10.f * OwnerCharacter->GetCameraForwardVector(nullptr, true);
+
+			if (GetWorld()->LineTraceSingleByChannel(OutHit, StartPosition, EndPosition, ECC_GameTraceChannel1))
+			{
+				AddPoint(OutHit.ImpactPoint, true);
+			}
+		}
+	}
+	else
 	{
 		FHitResult OutHit;
 
 		FVector StartPosition = OwnerCharacter->GetActorLocation();
 		FVector EndPosition = StartPosition + DrawingCollisionDistance * 10.f * OwnerCharacter->GetCameraForwardVector(nullptr, true);
-		
+
 		if (GetWorld()->LineTraceSingleByChannel(OutHit, StartPosition, EndPosition, ECC_GameTraceChannel1))
 		{
-			AddPoint(OutHit.ImpactPoint, true);
+			if (SplineComponent->GetNumberOfSplinePoints() == 0 || FVector::DistSquared(PreviousPoint, OutHit.ImpactPoint) >= DrawingGap * DrawingGap)
+			{
+				AddPoint(OutHit.ImpactPoint, true);
+				PreviousPoint = OutHit.ImpactPoint;
+			}
 		}
 	}
 }
@@ -114,9 +136,20 @@ bool UDrawingAbilityComponent::AddPointDirty(FVector& OutImpactPoint)
 	{
 		OutImpactPoint = OutHit.ImpactPoint;
 
-		if (DrawingTick > DrawingInterval)
+		if (!bDrawByDistance)
 		{
-			AddPoint(OutHit.ImpactPoint, true);
+			if (DrawingTick > DrawingInterval)
+			{
+				AddPoint(OutHit.ImpactPoint, true);
+			}
+		}
+		else
+		{
+			if (SplineComponent->GetNumberOfSplinePoints() == 0 || FVector::DistSquared(PreviousPoint, OutHit.ImpactPoint) >= DrawingGap * DrawingGap)
+			{
+				AddPoint(OutHit.ImpactPoint, true);
+				PreviousPoint = OutHit.ImpactPoint;
+			}
 		}
 
 		return true;
@@ -132,7 +165,9 @@ bool UDrawingAbilityComponent::AddPointDirty(FVector& OutImpactPoint)
 /// <param name="bForceDraw">true일 경우 Drawing Interval과 상관없이 무조건 점 추가, Drawing Tick은 초기화 됨</param>
 void UDrawingAbilityComponent::AddPoint(FVector Point, bool bForceDraw)
 {
-	if (bForceDraw || DrawingTick > DrawingInterval)
+	if (bForceDraw ||
+		(!bDrawByDistance && (DrawingTick > DrawingInterval)) ||
+		(bDrawByDistance && (SplineComponent->GetNumberOfSplinePoints() == 0 || FVector::DistSquared(PreviousPoint, Point) >= DrawingGap * DrawingGap)))
 	{
 		SplineComponent->AddSplinePoint(Point, ESplineCoordinateSpace::World);
 		SplinePoints.Add(Point);
