@@ -5,6 +5,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "NiagaraComponent.h"
 #include "Abilities/DrawingAbilityComponent.h"
 
 ABaseCharacter::ABaseCharacter()
@@ -22,6 +23,9 @@ ABaseCharacter::ABaseCharacter()
 
 	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
 	ViewCamera->SetupAttachment(CameraArm);
+
+	AbilityEffectComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("AbilityEffectComponent"));
+	AbilityEffectComponent->bAutoActivate = false;
 
 	DrawingAbilityComponent = CreateDefaultSubobject<UDrawingAbilityComponent>(TEXT("DrawingAbilityComponent"));
 
@@ -41,6 +45,8 @@ void ABaseCharacter::Tick(float DeltaTime)
 	if (bReadyAbility && bUsingAbility)
 	{
 		DrawingAbilityComponent->AddPoint();
+
+
 	}
 }
 
@@ -115,6 +121,7 @@ void ABaseCharacter::ReadyAbility()
 {
 	if (!bReadyAbility)
 	{
+		// 3인칭에서 1인칭으로 변경
 		if (auto MainMesh = Cast<USkeletalMeshComponent>(GetMesh()->GetDefaultSubobjectByName(FName("SkeletalMesh"))))
 		{
 			MainMesh->SetVisibility(false);
@@ -155,6 +162,12 @@ void ABaseCharacter::UseAbility()
 
 	bUsingAbility = true;
 	DrawingAbilityComponent->StartDrawing();
+
+	// 먹 이펙트 재생
+	if (AbilityEffectComponent->GetAsset())
+	{
+		AbilityEffectComponent->Activate();
+	}
 }
 
 void ABaseCharacter::EndUseAbility()
@@ -166,5 +179,11 @@ void ABaseCharacter::EndUseAbility()
 
 	bUsingAbility = false;
 	DrawingAbilityComponent->EndDrawing();
+
+	// 먹 이펙트 정지
+	if (AbilityEffectComponent->GetAsset())
+	{
+		AbilityEffectComponent->Deactivate();
+	}
 }
 

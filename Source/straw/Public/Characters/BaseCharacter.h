@@ -9,6 +9,7 @@
 class USpringArmComponent;
 class UCameraComponent;
 class UDrawingAbilityComponent;
+class UNiagaraComponent;
 
 UCLASS()
 class STRAW_API ABaseCharacter : public ACharacter
@@ -43,6 +44,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* ViewCamera;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta = (AllowPrivateAccess = "true"))
+	UNiagaraComponent* AbilityEffectComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta=(AllowPrivateAccess="true"))
 	UDrawingAbilityComponent* DrawingAbilityComponent;

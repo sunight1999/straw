@@ -41,7 +41,7 @@ private:
 	float DrawingCollisionDistance = 150.f;
 
 	UPROPERTY(EditAnywhere, Category = "Drawing Ability")
-	float DrawingCollisionHeight = 180.f;
+	float DrawingCollisionHeight = 130.f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Drawing Ability", Meta = (AllowPrivateAccess = "true"))
 	USplineComponent* SplineComponent;
