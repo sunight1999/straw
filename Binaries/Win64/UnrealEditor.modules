@@ -1,7 +1,7 @@
 {
-	"BuildId": "27405482",
+	"BuildId": "33043543",
 	"Modules": 
 	{
-		"straw": "UnrealEditor-straw-0009.dll"
+		"straw": "UnrealEditor-straw.dll"
 	}
 }
