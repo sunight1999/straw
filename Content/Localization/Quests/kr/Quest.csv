@@ -1,0 +1,11 @@
+Key,SourceString,Comment
+"C1_Q_M1_Name","테스트",
+"C1_Q_M1_Desc","테스트 구하기",
+"C1_Q_M1_S1_Name","서브 목표 1",
+"C1_Q_M1_S1_Desc","서브 목표 1 구하기",
+"C1_Q_M1_S1_O1_Name","고양이",
+"C1_Q_M1_S1_O1_Desc","고양이 그림 동물",
+"C1_Q_M1_S2_Name","서브 목표 2",
+"C1_Q_M1_S2_Desc","서브 목표 2 구하기",
+"C1_Q_M1_S2_O1_Name","강아지",
+"C1_Q_M1_S2_O1_Desc","강아지 그림 동물",
