@@ -6,6 +6,7 @@
 #include "Components/SplineMeshComponent.h"
 #include "Abilities/DrawingActualizer.h"
 #include "Components/BoxComponent.h"
+#include "NiagaraComponent.h"
 #include "Characters/BaseCharacter.h"
 
 UDrawingAbilityComponent::UDrawingAbilityComponent()
@@ -23,6 +24,9 @@ UDrawingAbilityComponent::UDrawingAbilityComponent()
 	DrawingCollision->bHiddenInGame = true;
 	
 	SplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("Spline"));
+
+	ActualizedEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ActualizedEffect"));
+	ActualizedEffect->bAutoActivate = false;
 }
 
 void UDrawingAbilityComponent::BeginPlay()
@@ -189,7 +193,11 @@ void UDrawingAbilityComponent::EndDrawing()
 	
 	// DrawingActualizer에 선 버텍스 정보를 전달해 오브젝트 생성 요청
 	ADrawingActualizer* DrawingActualizer = GetWorld()->SpawnActor<ADrawingActualizer>(ADrawingActualizer::StaticClass(), FVector::ZeroVector, DrawingCollision->GetComponentRotation());
-	DrawingActualizer->Actualize2D(SplinePoints, DrawingCollision->Bounds.GetBox(), DrawingCollision->GetComponentRotation(), ActualizedObjectThickness, ActualizedObjectMaterial);
+	FVector CenterPosition = DrawingActualizer->Actualize2D(SplinePoints, DrawingCollision->Bounds.GetBox(), DrawingCollision->GetComponentRotation(), ActualizedObjectThickness, ActualizedObjectMaterial);
+
+	ActualizedEffect->DeactivateImmediate();
+	ActualizedEffect->SetWorldLocation(CenterPosition);
+	ActualizedEffect->Activate();
 }
 
 /// <summary>

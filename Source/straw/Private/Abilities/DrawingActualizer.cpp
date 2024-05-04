@@ -47,7 +47,8 @@ void ADrawingActualizer::Tick(float DeltaTime)
 /// <param name="DrawingPlaneRotation">그림을 그린 평면의 Rotation 값</param>
 /// <param name="ActualizationThickness">실체화된 오브젝트의 두께</param>
 /// <param name="MeshMaterial">실체화된 오브젝트에 적용할 Material</param>
-void ADrawingActualizer::Actualize2D(TArray<FVector> DrawingVertices, FBox DrawingPlaneBox, FRotator DrawingPlaneRotation, float ActualizationThickness, UMaterialInterface* MeshMaterial)
+/// <return>생성된 오브젝트의 중심 좌표</return>
+FVector ADrawingActualizer::Actualize2D(TArray<FVector> DrawingVertices, FBox DrawingPlaneBox, FRotator DrawingPlaneRotation, float ActualizationThickness, UMaterialInterface* MeshMaterial)
 {
 	Material = MeshMaterial;
 
@@ -158,4 +159,6 @@ void ADrawingActualizer::Actualize2D(TArray<FVector> DrawingVertices, FBox Drawi
 	{
 		ProcMeshComponent->SetMaterial(0, Material);
 	}
+
+	return ProcMeshComponent->GetCenterOfMass();
 }

@@ -18,7 +18,7 @@ public:
 	ADrawingActualizer();
 	virtual void Tick(float DeltaTime) override;
 
-	void Actualize2D(TArray<FVector> DrawingVertices, FBox DrawingPlaneBox, FRotator DrawingPlaneRotation, float ActualizationThickness, UMaterialInterface* MeshMaterial);
+	FVector Actualize2D(TArray<FVector> DrawingVertices, FBox DrawingPlaneBox, FRotator DrawingPlaneRotation, float ActualizationThickness, UMaterialInterface* MeshMaterial);
 
 protected:
 	virtual void BeginPlay() override;

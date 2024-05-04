@@ -11,6 +11,7 @@ class UDecalComponent;
 class USplineComponent;
 class USplineMeshComponent;
 class UBoxComponent;
+class UNiagaraComponent;
 class ABaseCharacter;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
@@ -60,6 +61,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Drawing Ability")
 	UMaterialInterface* ActualizedObjectMaterial;
+
+	UPROPERTY(VisibleAnywhere, Category = "Drawing Ability")
+	UNiagaraComponent* ActualizedEffect;
 
 	UPROPERTY(EditAnywhere, Category = "Drawing Ability")
 	float ActualizedObjectThickness = 30.f;
