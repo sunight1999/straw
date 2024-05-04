@@ -37,6 +37,12 @@ private:
 	void UpdateSpline();
 
 	UPROPERTY(EditAnywhere, Category = "Drawing Ability")
+	UNiagaraComponent* AbilityGainedEffect;
+
+	UPROPERTY(EditAnywhere, Category = "Drawing Ability")
+	float AbilityGainedEffectZOffset;
+
+	UPROPERTY(EditAnywhere, Category = "Drawing Ability")
 	bool bDrawByDistance = true;
 
 	UPROPERTY(EditAnywhere, Category = "Drawing Ability")

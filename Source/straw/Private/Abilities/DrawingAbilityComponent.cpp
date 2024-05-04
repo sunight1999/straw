@@ -2,6 +2,7 @@
 
 
 #include "Abilities/DrawingAbilityComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
 #include "Abilities/DrawingActualizer.h"
@@ -12,6 +13,9 @@
 UDrawingAbilityComponent::UDrawingAbilityComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+
+	AbilityGainedEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("AbilityGainedEffect"));
+	AbilityGainedEffect->bAutoActivate = false;
 
 	DrawingCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("DrawingCollision"));
 	DrawingCollision->SetBoxExtent(FVector(1.f, 300.f, 100.f));
@@ -34,6 +38,14 @@ void UDrawingAbilityComponent::BeginPlay()
 	Super::BeginPlay();
 
 	OwnerCharacter = Cast<ABaseCharacter>(GetOwner());
+
+	// 능력 획득 이펙트 재생, 추후 도깨비와의 대화 이후 얻을 수 있게 코드 위치 이동 예정
+	USkeletalMeshComponent* CharacterMesh = OwnerCharacter->GetMesh();
+	FVector EffectLocation = CharacterMesh->GetComponentLocation();
+	EffectLocation.Z += CharacterMesh->GetRelativeLocation().Z + AbilityGainedEffectZOffset;
+
+	AbilityGainedEffect->SetWorldLocation(EffectLocation);
+	AbilityGainedEffect->Activate();
 }
 
 void UDrawingAbilityComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
