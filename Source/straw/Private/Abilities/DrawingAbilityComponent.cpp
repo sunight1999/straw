@@ -36,7 +36,7 @@ UDrawingAbilityComponent::UDrawingAbilityComponent()
 void UDrawingAbilityComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	OwnerCharacter = Cast<ABaseCharacter>(GetOwner());
 
 	// 능력 획득 이펙트 재생, 추후 도깨비와의 대화 이후 얻을 수 있게 코드 위치 이동 예정

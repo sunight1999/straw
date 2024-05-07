@@ -3,9 +3,19 @@
 
 #include "Quests/QuestSubsystem.h"
 #include "Characters/BaseCharacter.h"
+#include "UObject/ConstructorHelpers.h"
 #include "HUD/MainHUD.h"
 #include "HUD/QuestOverlay.h"
 #include "Quests/Quest.h"
+
+UQuestSubsystem::UQuestSubsystem()
+{
+	ConstructorHelpers::FObjectFinder<UDataTable> QuestDataTableFinder(TEXT("/Game/Datas/DT_Quests"));
+	if (QuestDataTableFinder.Succeeded())
+	{
+		QuestDataTable = QuestDataTableFinder.Object;
+	}
+}
 
 void UQuestSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -17,8 +27,14 @@ void UQuestSubsystem::Deinitialize()
 	
 }
 
-void UQuestSubsystem::AddQuest(FQuest* NewQuest)
+FQuestDetail* UQuestSubsystem::FindQuestDetail(const FName& ID) const
 {
+	return QuestDataTable->FindRow<FQuestDetail>(ID, FString(""));
+}
+
+void UQuestSubsystem::AddQuest(FQuestDetail* NewQuestDetail)
+{
+	FQuest* NewQuest = new FQuest(*NewQuestDetail);
 	CurrentQuests.Add(NewQuest);
 	UpdateUI();
 }

@@ -27,7 +27,7 @@ void FQuest::Initialize()
 void FQuest::Update(EQuestEvent QuestEvent, FString TargetID)
 {
 	FQuestStage CurrentStage = QuestDetail.Stages[CurrentStageIndex];
-	FQuestObjective CurrentObjective = CurrentStage.Objective;
+	FQuestObjective CurrentObjective = CurrentStage.Objectives[0];
 
 	if (CurrentObjective.QuestType != QuestEvent)
 	{
@@ -52,7 +52,7 @@ const FQuestDetail& FQuest::GetQuestDetail() const
 
 EQuestEvent FQuest::GetQuestType() const
 {
-	return GetCurrentStage().Objective.QuestType;
+	return GetCurrentStage().Objectives[0].QuestType;
 }
 
 FQuestStage FQuest::GetCurrentStage() const

@@ -50,31 +50,17 @@ void ABaseCharacter::BeginPlay()
 	{
 		if (UQuestSubsystem* QuestSubsystem = GameInstance->GetSubsystem<UQuestSubsystem>())
 		{
-			FQuestObjective Objective;
-			Objective.Name = NSLOCTEXT("QuestSubsystemTest", "T_O1_Name", "그림 동물");
-			Objective.Description = NSLOCTEXT("QuestSubsystemTest", "T_O1_Desc", "그림 동물");
-			Objective.ObjectiveID = TEXT("Animal");
-			Objective.Quantity = 4;
-			Objective.QuestType = EQuestEvent::Collect;
+			FQuestDetail* Quest = QuestSubsystem->FindQuestDetail(FName("QM001"));
+			if (!Quest)
+			{
+				UE_LOG(LogTemp, Display, TEXT("NONONONONULL"));
 
-			FQuestStage Stage;
-			Stage.Name = NSLOCTEXT("QuestSubsystemTest", "T_S1_Name", "그림 동물");
-			Stage.Description = NSLOCTEXT("QuestSubsystemTest", "T_S1_Dexc", "모든 그림 동물 구하기");
-			Stage.Objective = Objective;
-
-			FQuestDetail Detail;
-			Detail.Name = NSLOCTEXT("QuestSubsystemTest", "T_Q1_Name", "그림 동물 구하기");
-			Detail.Description = NSLOCTEXT("QuestSubsystemTest", "T_Q1_Desc", "도망간 동물을 모두 구해오자");
-			Detail.bIsMain = true;
-			Detail.Stages.Add(Stage);
-			Detail.Stages.Add(Stage);
-			Detail.Stages.Add(Stage);
-			Detail.Stages.Add(Stage);
-
-			FQuest* Quest = new FQuest(Detail);
+			}
+			else
+			{
+				UE_LOG(LogTemp, Display, TEXT("YESYESYES"));
+			}
 			QuestSubsystem->AddQuest(Quest);
-
-			QuestSubsystem->HandleEvent(EQuestEvent::Collect, Objective.ObjectiveID);
 		}
 	}
 }

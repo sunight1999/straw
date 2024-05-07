@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Quest.generated.h"
 
+UENUM()
 enum EQuestEvent
 {
 	Collect,
@@ -12,30 +14,57 @@ enum EQuestEvent
 	Interact
 };
 
-struct FQuestObjective
+USTRUCT(Atomic, BlueprintType)
+struct FQuestObjective : public FTableRowBase
 {
+	GENERATED_USTRUCT_BODY()
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FText Name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FText Description;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString ObjectiveID;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Quantity;
-	EQuestEvent QuestType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TEnumAsByte<EQuestEvent> QuestType;
 };
 
-struct FQuestStage
+USTRUCT(Atomic, BlueprintType)
+struct FQuestStage : public FTableRowBase
 {
+	GENERATED_USTRUCT_BODY()
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FText Name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FText Description;
-	FQuestObjective Objective;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FQuestObjective> Objectives;
 };
 
-struct FQuestDetail
+USTRUCT(Atomic, BlueprintType)
+struct FQuestDetail : public FTableRowBase
 {
+	GENERATED_USTRUCT_BODY()
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FText Name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FText Description;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FQuestStage> Stages;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bIsMain;
 };
 

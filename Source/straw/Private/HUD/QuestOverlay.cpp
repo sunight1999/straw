@@ -14,5 +14,5 @@ void UQuestOverlay::SetQuest(FQuest* Quest)
 	QuestDescText->SetText(QuestDetail.Description);
 	QuestQuantityText->SetText(FText::FromString(FString::Printf(TEXT("(%d/%d)"),
 		Quest->GetCurrentQuantity(),
-		Quest->GetCurrentStage().Objective.Quantity)));
+		Quest->GetCurrentStage().Objectives[0].Quantity)));
 }
