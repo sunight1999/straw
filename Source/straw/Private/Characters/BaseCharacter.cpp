@@ -4,11 +4,13 @@
 #include "Characters/BaseCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Interacts/Grabber.h"
 #include "Camera/CameraComponent.h"
 #include "NiagaraComponent.h"
-#include "Abilities/DrawingAbilityComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 
+#include "Abilities/DrawingAbilityComponent.h"
+#include "Interacts/Grabber.h"
+#include "Interacts/Interactable.h"
 #include "Quests/Quest.h"
 #include "Quests/QuestSubsystem.h"
 
@@ -46,7 +48,7 @@ void ABaseCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	// UI 테스트용
-	if (UGameInstance* GameInstance = GetGameInstance())
+	/*if (UGameInstance* GameInstance = GetGameInstance())
 	{
 		if (UQuestSubsystem* QuestSubsystem = GameInstance->GetSubsystem<UQuestSubsystem>())
 		{
@@ -62,7 +64,7 @@ void ABaseCharacter::BeginPlay()
 			}
 			QuestSubsystem->AddQuest(Quest);
 		}
-	}
+	}*/
 }
 
 void ABaseCharacter::Tick(float DeltaTime)
@@ -92,15 +94,16 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAxis(FName("Turn"), this, &ABaseCharacter::Turn);
 	PlayerInputComponent->BindAxis(FName("LookUp"), this, &ABaseCharacter::LookUp);
 	PlayerInputComponent->BindAxis(FName("MoveRight"), this, &ABaseCharacter::MoveRight);
+
 	PlayerInputComponent->BindAction(FName("Jump"), IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction(FName("Jump"), IE_Released, this, &ACharacter::StopJumping);
-
 	PlayerInputComponent->BindAction(FName("Grab"), IE_Pressed, this, &ABaseCharacter::TryGrab);
 	PlayerInputComponent->BindAction(FName("Grab"), IE_Released, this, &ABaseCharacter::TryRelease);
 	PlayerInputComponent->BindAction(FName("ReadyAbility"), IE_Pressed, this, &ABaseCharacter::ReadyAbility);
 	PlayerInputComponent->BindAction(FName("ReadyAbility"), IE_Released, this, &ABaseCharacter::EndReadyAbility);
 	PlayerInputComponent->BindAction(FName("UseAbility"), IE_Pressed, this, &ABaseCharacter::UseAbility);
 	PlayerInputComponent->BindAction(FName("UseAbility"), IE_Released, this, &ABaseCharacter::EndUseAbility);
+	PlayerInputComponent->BindAction(FName("Action"), IE_Pressed, this, &ABaseCharacter::Action);
 }
 
 FVector ABaseCharacter::GetCameraForwardVector(FRotator* OutCameraRotation, bool bIncludePitch) const
@@ -120,6 +123,19 @@ FVector ABaseCharacter::GetCameraForwardVector(FRotator* OutCameraRotation, bool
 	}
 
 	return Direction;
+}
+
+void ABaseCharacter::SetInteraction(AActor* Actor)
+{
+	if (UKismetSystemLibrary::DoesImplementInterface(Actor, UInteractable::StaticClass()))
+	{
+		CurrentInteraction = Actor;
+	}
+}
+
+void ABaseCharacter::ReleaseInteraction()
+{
+	CurrentInteraction = nullptr;
 }
 
 void ABaseCharacter::MoveForward(float Value)
@@ -227,6 +243,19 @@ void ABaseCharacter::EndUseAbility()
 	if (AbilityEffectComponent->GetAsset())
 	{
 		AbilityEffectComponent->Deactivate();
+	}
+}
+
+void ABaseCharacter::Action()
+{
+	if (!CurrentInteraction)
+	{
+		return;
+	}
+
+	if (IInteractable* Interaction = Cast<IInteractable>(CurrentInteraction))
+	{
+		Interaction->Interact();
 	}
 }
 

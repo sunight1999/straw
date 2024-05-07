@@ -24,22 +24,26 @@ public:
 
 	FVector GetCameraForwardVector(FRotator* OutCameraRotation = nullptr, bool bIncludePitch = false) const;
 
+	void SetInteraction(AActor* Actor);
+	void ReleaseInteraction();
+
 protected:
 	virtual void BeginPlay() override;
 
-	/* 캐릭터 이동 관련 */
+	/* Axis 바인딩 함수 */
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 	void Turn(float Value);
 	void LookUp(float Value);
 
-	/* 능력 사용 관련 */
+	/* Action 바인딩 함수 */
 	void TryGrab();
 	void TryRelease();
 	void ReadyAbility();
 	void EndReadyAbility();
 	void UseAbility();
 	void EndUseAbility();
+	void Action();
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -61,4 +65,6 @@ private:
 	bool bUsingAbility = false;
 
 	float OriginTargetArmLength;
+
+	AActor* CurrentInteraction;
 };
