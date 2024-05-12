@@ -3,16 +3,19 @@
 
 #include "Interacts/NPC/NPC.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/WidgetComponent.h"
+
 #include "Quests/QuestSubsystem.h"
 #include "Quests/Quest.h"
 
-ANPC::ANPC()
+ANPC::ANPC() : Super()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	StaticMesh->SetupAttachment(RootComponent);
+
+	InteractableWidget->SetWidgetSpace(EWidgetSpace::Screen);
 }
 
 void ANPC::Interact()
@@ -35,6 +38,11 @@ void ANPC::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// 설정한 Mesh 크기에 맞춰 Interactable UI 위치 조정
+	FVector MeshExtent = StaticMesh->Bounds.BoxExtent;
+	InteractableWidget->SetRelativeLocation(FVector(0.f, 0.f, MeshExtent.Z));
+
+	// 퀘스트 데이터 로드
 	UGameInstance* GameInstance = UGameplayStatics::GetGameInstance(GetWorld());
 	if (!GameInstance)
 	{

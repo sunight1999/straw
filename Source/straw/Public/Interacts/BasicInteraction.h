@@ -8,6 +8,7 @@
 
 class USceneComponent;
 class UBoxComponent;
+class UWidgetComponent;
 class ABaseCharacter;
 
 UCLASS()
@@ -31,6 +32,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "BasicInteraction")
 	class UBoxComponent* OverlapBox;
+
+	UPROPERTY(VisibleAnywhere, Category = "BasicInteraction")
+	class UWidgetComponent* InteractableWidget;
 
 	ABaseCharacter* Player;
 

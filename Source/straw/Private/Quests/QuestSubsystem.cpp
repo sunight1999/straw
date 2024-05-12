@@ -65,7 +65,12 @@ void UQuestSubsystem::UpdateUI()
 	// 현재 진행 중인 퀘스트를 모두 목록에 띄우도록 수정 필요
 	if (CurrentQuests.Num() > 0)
 	{
+		QuestOverlay->SetVisibility(ESlateVisibility::Visible);
 		QuestOverlay->SetQuest(CurrentQuests[0]);
+	}
+	else
+	{
+		QuestOverlay->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 

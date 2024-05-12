@@ -11,7 +11,6 @@
 #include "Abilities/DrawingAbilityComponent.h"
 #include "Interacts/Grabber.h"
 #include "Interacts/Interactable.h"
-#include "Quests/Quest.h"
 #include "Quests/QuestSubsystem.h"
 
 ABaseCharacter::ABaseCharacter()
@@ -47,24 +46,14 @@ void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// UI 테스트용
-	/*if (UGameInstance* GameInstance = GetGameInstance())
+	// 퀘스트 오버레이 UI 초기화
+	if (UGameInstance* GameInstance = GetGameInstance())
 	{
 		if (UQuestSubsystem* QuestSubsystem = GameInstance->GetSubsystem<UQuestSubsystem>())
 		{
-			FQuestDetail* Quest = QuestSubsystem->FindQuestDetail(FName("QM001"));
-			if (!Quest)
-			{
-				UE_LOG(LogTemp, Display, TEXT("NONONONONULL"));
-
-			}
-			else
-			{
-				UE_LOG(LogTemp, Display, TEXT("YESYESYES"));
-			}
-			QuestSubsystem->AddQuest(Quest);
+			QuestSubsystem->UpdateUI();
 		}
-	}*/
+	}
 }
 
 void ABaseCharacter::Tick(float DeltaTime)
