@@ -14,8 +14,6 @@ ANPC::ANPC() : Super()
 
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	StaticMesh->SetupAttachment(RootComponent);
-
-	InteractableWidget->SetWidgetSpace(EWidgetSpace::Screen);
 }
 
 void ANPC::Interact()
@@ -30,7 +28,10 @@ void ANPC::Talk()
 	// 2. 해당 다이얼로그에서 연관 퀘스트 아이디 받아오기
 
 	// 현재 다이얼로그 시스템이 없으므로 일단 퀘스트를 바로 부여
-	QuestSubsystem->AddQuest(QuestsMap[QuestIDs[0]]);
+	if (QuestsMap.Num() > 0)
+	{
+		QuestSubsystem->AddQuest(QuestsMap[QuestIDs[0]]);
+	}
 }
 
 // Called when the game starts or when spawned

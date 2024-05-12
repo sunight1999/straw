@@ -17,8 +17,9 @@ ABasicInteraction::ABasicInteraction()
 	RootComponent = OverlapBox;
 
 	InteractableWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("InteractableWidget"));
-	InteractableWidget->SetupAttachment(RootComponent);
 	InteractableWidget->SetVisibility(false);
+	InteractableWidget->SetWidgetSpace(EWidgetSpace::Screen);
+	InteractableWidget->SetupAttachment(RootComponent);
 
 	// 상호작용 가능 UI를 기본값으로 할당
 	ConstructorHelpers::FClassFinder<UUserWidget> InteractableWidgetFinder(TEXT("/Game/UI/W_InteractivePrompt"));
