@@ -34,7 +34,5 @@ private:
 	UPROPERTY(EditAnywhere, Category = "NPC")
 	TArray<FString> QuestIDs;
 
-	TMap<FString, FQuestDetail*> QuestsMap;
-
 	UQuestSubsystem* QuestSubsystem;
 };

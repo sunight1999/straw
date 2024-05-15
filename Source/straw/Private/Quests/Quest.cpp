@@ -8,8 +8,10 @@ FQuest::FQuest()
 	Initialize();
 }
 
-FQuest::FQuest(FQuestDetail InQuestDetail)
+FQuest::FQuest(FQuestDetail* InQuestDetail)
 {
+	verify(InQuestDetail != nullptr)
+
 	Initialize();
 	QuestDetail = InQuestDetail;
 }
@@ -26,7 +28,7 @@ void FQuest::Initialize()
 
 void FQuest::Update(EQuestEvent QuestEvent, FString TargetID)
 {
-	FQuestStage CurrentStage = QuestDetail.Stages[CurrentStageIndex];
+	FQuestStage CurrentStage = QuestDetail->Stages[CurrentStageIndex];
 	FQuestObjective CurrentObjective = CurrentStage.Objectives[0];
 
 	if (CurrentObjective.QuestType != QuestEvent)
@@ -45,7 +47,7 @@ void FQuest::Update(EQuestEvent QuestEvent, FString TargetID)
 	}
 }
 
-const FQuestDetail& FQuest::GetQuestDetail() const
+const FQuestDetail* FQuest::GetQuestDetail() const
 {
 	return QuestDetail;
 }
@@ -57,7 +59,7 @@ EQuestEvent FQuest::GetQuestType() const
 
 FQuestStage FQuest::GetCurrentStage() const
 {
-	return QuestDetail.Stages[CurrentStageIndex];
+	return QuestDetail->Stages[CurrentStageIndex];
 }
 
 int32 FQuest::GetCurrentStageIndex() const
@@ -77,7 +79,7 @@ bool FQuest::IsCompleted() const
 
 void FQuest::CompleteStage()
 {
-	if (++CurrentStageIndex >= QuestDetail.Stages.Num())
+	if (++CurrentStageIndex >= QuestDetail->Stages.Num())
 	{
 		bIsCompleted = true;
 

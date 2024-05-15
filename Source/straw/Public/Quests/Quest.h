@@ -75,13 +75,13 @@ class STRAW_API FQuest
 {
 public:
 	FQuest();
-	FQuest(FQuestDetail InQuestDetail);
+	FQuest(FQuestDetail* InQuestDetail);
 	~FQuest();
 
 	void Initialize();
 	void Update(EQuestEvent QuestEvent, FString TargetID);
 
-	const FQuestDetail& GetQuestDetail() const;
+	const FQuestDetail* GetQuestDetail() const;
 	EQuestEvent GetQuestType() const;
 	FQuestStage GetCurrentStage() const;
 	int32 GetCurrentStageIndex() const;
@@ -92,7 +92,7 @@ public:
 private:
 	void CompleteStage();
 
-	FQuestDetail QuestDetail;
+	FQuestDetail* QuestDetail;
 	int32 CurrentStageIndex;
 	int32 CurrentQuantity;
 

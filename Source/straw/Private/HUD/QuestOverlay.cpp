@@ -8,11 +8,14 @@
 
 void UQuestOverlay::SetQuest(FQuest* Quest)
 {
-	const FQuestDetail QuestDetail = Quest->GetQuestDetail();
+	const FQuestDetail* QuestDetail = Quest->GetQuestDetail();
 
-	QuestTitleText->SetText(QuestDetail.Name);
-	QuestDescText->SetText(QuestDetail.Description);
-	QuestQuantityText->SetText(FText::FromString(FString::Printf(TEXT("(%d/%d)"),
-		Quest->GetCurrentQuantity(),
-		Quest->GetCurrentStage().Objectives[0].Quantity)));
+	if (QuestDetail)
+	{
+		QuestTitleText->SetText(QuestDetail->Name);
+		QuestDescText->SetText(QuestDetail->Description);
+		QuestQuantityText->SetText(FText::FromString(FString::Printf(TEXT("(%d/%d)"),
+			Quest->GetCurrentQuantity(),
+			Quest->GetCurrentStage().Objectives[0].Quantity)));
+	}
 }

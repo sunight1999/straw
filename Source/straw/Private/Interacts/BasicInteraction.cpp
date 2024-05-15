@@ -67,3 +67,9 @@ void ABasicInteraction::Tick(float DeltaTime)
 
 }
 
+void ABasicInteraction::RelocationInteractableWidget(UMeshComponent* Mesh)
+{
+	FVector MeshExtent = Mesh->Bounds.BoxExtent;
+	InteractableWidget->SetRelativeLocation(FVector(0.f, 0.f, MeshExtent.Z));
+}
+

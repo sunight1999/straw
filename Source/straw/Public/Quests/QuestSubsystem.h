@@ -27,7 +27,7 @@ public:
 
 	FQuestDetail* FindQuestDetail(const FName& ID) const;
 
-	void AddQuest(FQuestDetail* NewQuestDetail);
+	void AddQuest(FName QuestID);
 	void EndQuest(FQuest* TargetQuest);
 	void HandleEvent(EQuestEvent QuestEvent, FString TargetID);
 	void UpdateUI();

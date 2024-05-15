@@ -32,9 +32,10 @@ FQuestDetail* UQuestSubsystem::FindQuestDetail(const FName& ID) const
 	return QuestDataTable->FindRow<FQuestDetail>(ID, FString(""));
 }
 
-void UQuestSubsystem::AddQuest(FQuestDetail* NewQuestDetail)
+void UQuestSubsystem::AddQuest(FName QuestID)
 {
-	FQuest* NewQuest = new FQuest(*NewQuestDetail);
+	FQuestDetail* QuestDetail = FindQuestDetail(QuestID);
+	FQuest* NewQuest = new FQuest(QuestDetail);
 	CurrentQuests.Add(NewQuest);
 	UpdateUI();
 }
