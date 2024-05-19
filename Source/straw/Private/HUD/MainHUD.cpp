@@ -3,10 +3,16 @@
 
 #include "HUD/MainHUD.h"
 #include "HUD/QuestOverlay.h"
+#include "HUD/OrnamentOverlay.h"
 
 UQuestOverlay* AMainHUD::GetQuestOverlay() const
 {
 	return QuestOverlay;
+}
+
+UOrnamentOverlay* AMainHUD::GetOrnamentOverlay() const
+{
+	return OrnamentOverlay;
 }
 
 void AMainHUD::BeginPlay()
@@ -21,6 +27,9 @@ void AMainHUD::BeginPlay()
 		{
 			QuestOverlay = CreateWidget<UQuestOverlay>(PlayerController, QuestOverlayClass);
 			QuestOverlay->AddToViewport();
+
+			OrnamentOverlay = CreateWidget<UOrnamentOverlay>(PlayerController, OrnamentOverlayClass);
+			OrnamentOverlay->AddToViewport();
 		}
 	}
 }

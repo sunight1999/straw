@@ -11,6 +11,10 @@ class UCameraComponent;
 class UGrabber;
 class UDrawingAbilityComponent;
 class UNiagaraComponent;
+class ATraditionalKey;
+class ATraditionalOrnament;
+class AMainHUD;
+class UOrnamentOverlay;
 
 UCLASS()
 class STRAW_API ABaseCharacter : public ACharacter
@@ -26,6 +30,14 @@ public:
 
 	void SetInteraction(AActor* Actor);
 	void ReleaseInteraction();
+	void SetCollectable(AActor* Actor);
+	void SetRootable(AActor* Actor);
+
+	/* 퀘스트 관련 함수 */
+	ATraditionalKey* HasTraditionalKey(FString KeyID);
+	float GetTraditionalKeyOffset(FString KeyID);
+	void UseTraditionalKey(FString KeyID);
+	bool IsTraditionalOrnamentReady();
 
 protected:
 	virtual void BeginPlay() override;
@@ -46,6 +58,7 @@ protected:
 	void Action();
 
 private:
+	/* 조작 및 카메라*/
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* CameraArm;
 
@@ -55,16 +68,29 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UGrabber* Grabber;
 
+	float OriginTargetArmLength;
+
+	/* 능력 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta = (AllowPrivateAccess = "true"))
 	UNiagaraComponent* AbilityEffectComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta=(AllowPrivateAccess="true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta = (AllowPrivateAccess = "true"))
 	UDrawingAbilityComponent* DrawingAbilityComponent;
 
 	bool bReadyAbility = false;
 	bool bUsingAbility = false;
 
-	float OriginTargetArmLength;
-
+	/* 상호작용 */
 	AActor* CurrentInteraction;
+
+	/* 퀘스트 */
+	TArray<ATraditionalKey*> TraditionalKeys;
+	TMap<FString, float> TraditionalKeyOffsetMap;
+
+	/* Rootable */
+	bool TraditionalOrnaments[4];
+
+	/* UI */
+	AMainHUD* MainHUD;
+	UOrnamentOverlay* OrnamentOverlay;
 };

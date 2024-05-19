@@ -52,12 +52,28 @@ void ABasicInteraction::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedCompone
 
 void ABasicInteraction::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	EndOverlap();
+}
+
+void ABasicInteraction::EndOverlap()
+{
 	InteractableWidget->SetVisibility(false);
 
 	if (Player)
 	{
 		Player->ReleaseInteraction();
 	}
+}
+
+/// <summary>
+/// Collision Box와 상호작용 가능 UI를 비활성화
+/// </summary>
+void ABasicInteraction::StopInteraction()
+{
+	EndOverlap();
+	OverlapBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	InteractableWidget->SetVisibility(false);
 }
 
 // Called every frame

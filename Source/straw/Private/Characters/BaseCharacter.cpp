@@ -11,7 +11,13 @@
 #include "Abilities/DrawingAbilityComponent.h"
 #include "Interacts/Grabber.h"
 #include "Interacts/Interactable.h"
+#include "Interacts/Collectable.h"
+#include "Interacts/Rootable.h"
+#include "Interacts/Objectives/TraditionalKey.h"
+#include "Interacts/Objectives/TraditionalOrnament.h"
 #include "Quests/QuestSubsystem.h"
+#include "HUD/MainHUD.h"
+#include "HUD/OrnamentOverlay.h"
 
 ABaseCharacter::ABaseCharacter()
 {
@@ -46,7 +52,16 @@ void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// 퀘스트 오버레이 UI 초기화
+	// HUD 캐싱
+	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	{
+		MainHUD = Cast<AMainHUD>(PlayerController->GetHUD());
+	}
+
+	// 전통 문양 조각 UI 캐싱
+	OrnamentOverlay = MainHUD->GetOrnamentOverlay();
+
+	// 퀘스트 UI 초기화
 	if (UGameInstance* GameInstance = GetGameInstance())
 	{
 		if (UQuestSubsystem* QuestSubsystem = GameInstance->GetSubsystem<UQuestSubsystem>())
@@ -120,11 +135,104 @@ void ABaseCharacter::SetInteraction(AActor* Actor)
 	{
 		CurrentInteraction = Actor;
 	}
+	else if (UKismetSystemLibrary::DoesImplementInterface(Actor, UCollectable::StaticClass()))
+	{
+		CurrentInteraction = Actor;
+	}
+	else if (UKismetSystemLibrary::DoesImplementInterface(Actor, URootable::StaticClass()))
+	{
+		SetRootable(Actor);
+	}
 }
 
 void ABaseCharacter::ReleaseInteraction()
 {
 	CurrentInteraction = nullptr;
+}
+
+void ABaseCharacter::SetCollectable(AActor* Actor)
+{
+	if (ATraditionalKey* Key = Cast<ATraditionalKey>(Actor))
+	{
+		TraditionalKeys.Add(Key);
+	}
+}
+
+void ABaseCharacter::SetRootable(AActor* Actor)
+{
+	if (ATraditionalOrnament* TraditionalOrnament = Cast<ATraditionalOrnament>(Actor))
+	{
+		EOrnamentPart OrnamentPart = TraditionalOrnament->GetOrnamentPart();
+		
+		TraditionalOrnaments[static_cast<int8>(OrnamentPart)] = true;
+		OrnamentOverlay->SetOrnamentVisibility(OrnamentPart, true);
+	}
+
+	IRootable* Rootable = Cast<IRootable>(Actor);
+	Rootable->Root();
+}
+
+ATraditionalKey* ABaseCharacter::HasTraditionalKey(FString KeyID)
+{
+	for (auto Key : TraditionalKeys)
+	{
+		if (Key->GetKeyID().Compare(KeyID) == 0)
+		{
+			return Key;
+		}
+	}
+
+	return nullptr;
+}
+
+float ABaseCharacter::GetTraditionalKeyOffset(FString KeyID)
+{
+	if (float* offset = TraditionalKeyOffsetMap.Find(KeyID))
+	{
+		return *offset;
+	}
+	
+	float offset = 0.f;
+	for (auto Key : TraditionalKeys)
+	{
+		if (Key->GetKeyID().Compare(KeyID) == 0)
+		{
+			TraditionalKeyOffsetMap.Add(KeyID, offset);
+			return offset;
+		}
+
+		offset += Key->GetKeyLength();
+	}
+
+	UE_LOG(LogTemp, Error, TEXT("존재하지 않는 키 정보입니다. (%s)"), *KeyID);
+	return 0.f;
+}
+
+void ABaseCharacter::UseTraditionalKey(FString KeyID)
+{
+	for (int i = 0; i < TraditionalKeys.Num(); i++)
+	{
+		if (TraditionalKeys[i]->GetKeyID().Compare(KeyID) == 0)
+		{
+			ATraditionalKey* Key = TraditionalKeys[i];
+			TraditionalKeys.RemoveAt(i);
+
+			return;
+		}
+	}
+}
+
+bool ABaseCharacter::IsTraditionalOrnamentReady()
+{
+	for (bool bCollected : TraditionalOrnaments)
+	{
+		if (!bCollected)
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 void ABaseCharacter::MoveForward(float Value)
@@ -246,5 +354,11 @@ void ABaseCharacter::Action()
 	{
 		Interaction->Interact();
 	}
+	else if (ICollectable* Collection = Cast<ICollectable>(CurrentInteraction))
+	{
+		SetCollectable(CurrentInteraction);
+		Collection->Collect();
+	}
+
 }
 

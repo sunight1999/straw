@@ -30,6 +30,9 @@ protected:
 
 	UFUNCTION()
 	virtual void OnBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	virtual void EndOverlap();
+
+	void StopInteraction();
 
 	UPROPERTY(VisibleAnywhere, Category = "BasicInteraction")
 	class UBoxComponent* OverlapBox;

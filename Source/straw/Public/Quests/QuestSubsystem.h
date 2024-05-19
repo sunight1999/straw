@@ -8,7 +8,7 @@
 
 class UQuestOverlay;
 class FQuest;
-enum EQuestEvent;
+enum class EQuestEvent : uint8;
 struct FQuestDetail;
 
 /**

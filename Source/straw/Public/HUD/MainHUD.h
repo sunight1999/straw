@@ -7,6 +7,7 @@
 #include "MainHUD.generated.h"
 
 class UQuestOverlay;
+class UOrnamentOverlay;
 
 /**
  * 
@@ -18,6 +19,7 @@ class STRAW_API AMainHUD : public AHUD
 
 public:
 	UQuestOverlay* GetQuestOverlay() const;
+	UOrnamentOverlay* GetOrnamentOverlay() const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -26,5 +28,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Main)
 	TSubclassOf<UQuestOverlay> QuestOverlayClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = Main)
+	TSubclassOf<UOrnamentOverlay> OrnamentOverlayClass;
+
 	UQuestOverlay* QuestOverlay;
+	UOrnamentOverlay* OrnamentOverlay;
 };

@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 #include "Quest.generated.h"
 
-UENUM()
-enum EQuestEvent
+UENUM(BlueprintType)
+enum class EQuestEvent : uint8
 {
 	Collect,
 	Travel,
@@ -32,7 +32,7 @@ public:
 	int32 Quantity;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TEnumAsByte<EQuestEvent> QuestType;
+	EQuestEvent QuestType;
 };
 
 USTRUCT(Atomic, BlueprintType)
