@@ -8,6 +8,7 @@
 #include "TraditionalKey.generated.h"
 
 class ATraditionalBox;
+class UNiagaraComponent;
 
 /**
  * 
@@ -30,6 +31,9 @@ public:
 private:
 	UPROPERTY(EditAnywhere, Category = "TraditionalKey")
 	UStaticMeshComponent* Mesh;
+
+	UPROPERTY(EditAnywhere, Category = "TraditionalKey")
+	UNiagaraComponent* TrackingEffect;
 
 	UPROPERTY(EditAnywhere, Category = "TraditionalKey")
 	float TrackingSpeed = 10.f;

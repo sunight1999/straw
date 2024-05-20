@@ -2,6 +2,7 @@
 
 
 #include "Interacts/Objectives/TraditionalKey.h"
+#include "NiagaraComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
 
@@ -14,6 +15,9 @@ ATraditionalKey::ATraditionalKey()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Mesh->SetupAttachment(RootComponent);
+
+	TrackingEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("TrackingEffect"));
+	TrackingEffect->SetupAttachment(Mesh);
 }
 
 void ATraditionalKey::Tick(float DeltaTime)

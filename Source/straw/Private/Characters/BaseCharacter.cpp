@@ -216,6 +216,7 @@ void ABaseCharacter::UseTraditionalKey(FString KeyID)
 		{
 			ATraditionalKey* Key = TraditionalKeys[i];
 			TraditionalKeys.RemoveAt(i);
+			TraditionalKeyOffsetMap.Empty(); // 모든 키의 위치 offset을 재계산
 
 			return;
 		}
