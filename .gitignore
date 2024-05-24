@@ -93,13 +93,7 @@ Content/Audios
 Content/WH_Herbs
 
 # External Assets (SFX)
-Content/Drag_And_Slide
-Content/Drawers_SFX_Pack
-Content/FoleyFootstepsSFXPackVol1
-Content/KawaiiUI
-Content/Kitchen_Foley
-Content/ProSoundCollection_v1_3
-Content/ProSoundCollection_v1_3_MONO
+Content/Audios
 
 # Large Meshes
 Content/Meshes/*
