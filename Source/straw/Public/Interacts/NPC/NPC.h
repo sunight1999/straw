@@ -8,7 +8,9 @@
 #include "NPC.generated.h"
 
 class UQuestSubsystem;
+class UDialogueSubsystem;
 struct FQuestDetail;
+struct FDialogue;
 
 /**
  * 
@@ -23,6 +25,7 @@ public:
 
 	void Interact() override;
 	void Talk();
+	void GiveQuest();
 
 protected:
 	virtual void BeginPlay() override;
@@ -32,7 +35,10 @@ private:
 	UStaticMeshComponent* StaticMesh; // 스켈레탈 메쉬로 변경 예정
 
 	UPROPERTY(EditAnywhere, Category = "NPC")
-	TArray<FString> QuestIDs;
+	TArray<FString> DialogueIDs;
 
 	UQuestSubsystem* QuestSubsystem;
+	UDialogueSubsystem* DialogueSubsystem;
+
+	FDialogue* CurrentDialogue;
 };

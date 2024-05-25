@@ -8,6 +8,7 @@
 
 class UQuestOverlay;
 class UOrnamentOverlay;
+class UDialogueUI;
 
 /**
  * 
@@ -20,6 +21,7 @@ class STRAW_API AMainHUD : public AHUD
 public:
 	UQuestOverlay* GetQuestOverlay() const;
 	UOrnamentOverlay* GetOrnamentOverlay() const;
+	UDialogueUI* GetDialogueUI() const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -31,6 +33,10 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Main)
 	TSubclassOf<UOrnamentOverlay> OrnamentOverlayClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = Main)
+	TSubclassOf<UDialogueUI> DialogueUIClass;
+
 	UQuestOverlay* QuestOverlay;
 	UOrnamentOverlay* OrnamentOverlay;
+	UDialogueUI* DialogueUI;
 };

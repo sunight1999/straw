@@ -16,6 +16,7 @@
 #include "Interacts/Objectives/TraditionalKey.h"
 #include "Interacts/Objectives/TraditionalOrnament.h"
 #include "Quests/QuestSubsystem.h"
+#include "Dialogues/DialogueSubsystem.h"
 #include "HUD/MainHUD.h"
 #include "HUD/OrnamentOverlay.h"
 
@@ -60,6 +61,7 @@ void ABaseCharacter::BeginPlay()
 
 	// 전통 문양 조각 UI 캐싱
 	OrnamentOverlay = MainHUD->GetOrnamentOverlay();
+	OrnamentOverlay->SetVisibility(ESlateVisibility::Hidden);
 
 	// 퀘스트 UI 초기화
 	if (UGameInstance* GameInstance = GetGameInstance())
@@ -68,6 +70,8 @@ void ABaseCharacter::BeginPlay()
 		{
 			QuestSubsystem->UpdateUI();
 		}
+
+		DialogueSubsystem = GameInstance->GetSubsystem<UDialogueSubsystem>();
 	}
 }
 
@@ -162,6 +166,8 @@ void ABaseCharacter::SetRootable(AActor* Actor)
 {
 	if (ATraditionalOrnament* TraditionalOrnament = Cast<ATraditionalOrnament>(Actor))
 	{
+		OrnamentOverlay->SetVisibility(ESlateVisibility::Visible);
+
 		EOrnamentPart OrnamentPart = TraditionalOrnament->GetOrnamentPart();
 		
 		TraditionalOrnaments[static_cast<int8>(OrnamentPart)] = true;
@@ -238,6 +244,11 @@ bool ABaseCharacter::IsTraditionalOrnamentReady()
 
 void ABaseCharacter::MoveForward(float Value)
 {
+	if (DialogueSubsystem->IsDisplaying())
+	{
+		return;
+	}
+
 	if (Controller && (Value != 0.f))
 	{
 		AddMovementInput(GetCameraForwardVector(), Value);
@@ -246,6 +257,11 @@ void ABaseCharacter::MoveForward(float Value)
 
 void ABaseCharacter::MoveRight(float Value)
 {
+	if (DialogueSubsystem->IsDisplaying())
+	{
+		return;
+	}
+
 	if (Controller && (Value != 0.f))
 	{
 		const FRotator ControlRotation = GetControlRotation();
@@ -258,16 +274,31 @@ void ABaseCharacter::MoveRight(float Value)
 
 void ABaseCharacter::Turn(float Value)
 {
+	if (DialogueSubsystem->IsDisplaying())
+	{
+		return;
+	}
+
 	AddControllerYawInput(Value);
 }
 
 void ABaseCharacter::LookUp(float Value)
 {
+	if (DialogueSubsystem->IsDisplaying())
+	{
+		return;
+	}
+
 	AddControllerPitchInput(Value);
 }
 
 void ABaseCharacter::TryGrab()
 {
+	if (DialogueSubsystem->IsDisplaying())
+	{
+		return;
+	}
+
 	if (!bReadyAbility)
 	{
 		Grabber->Grab();
@@ -276,11 +307,21 @@ void ABaseCharacter::TryGrab()
 
 void ABaseCharacter::TryRelease()
 {
+	if (DialogueSubsystem->IsDisplaying())
+	{
+		return;
+	}
+
 	Grabber->Release();
 }
 
 void ABaseCharacter::ReadyAbility()
 {
+	if (DialogueSubsystem->IsDisplaying())
+	{
+		return;
+	}
+
 	if (!bReadyAbility)
 	{
 		// 3인칭에서 1인칭으로 변경
@@ -300,6 +341,11 @@ void ABaseCharacter::ReadyAbility()
 
 void ABaseCharacter::EndReadyAbility()
 {
+	if (DialogueSubsystem->IsDisplaying())
+	{
+		return;
+	}
+
 	if (bUsingAbility)
 	{
 		EndUseAbility();
@@ -318,6 +364,11 @@ void ABaseCharacter::EndReadyAbility()
 
 void ABaseCharacter::UseAbility()
 {
+	if (DialogueSubsystem->IsDisplaying())
+	{
+		return;
+	}
+
 	if (!bReadyAbility)
 	{
 		return;
@@ -329,6 +380,11 @@ void ABaseCharacter::UseAbility()
 
 void ABaseCharacter::EndUseAbility()
 {
+	if (DialogueSubsystem->IsDisplaying())
+	{
+		return;
+	}
+
 	if (!bReadyAbility)
 	{
 		return;
@@ -346,20 +402,26 @@ void ABaseCharacter::EndUseAbility()
 
 void ABaseCharacter::Action()
 {
-	if (!CurrentInteraction)
+	if (DialogueSubsystem->IsDisplaying())
 	{
-		return;
+		DialogueSubsystem->Next();
 	}
+	else
+	{
+		if (!CurrentInteraction)
+		{
+			return;
+		}
 
-	if (IInteractable* Interaction = Cast<IInteractable>(CurrentInteraction))
-	{
-		Interaction->Interact();
+		if (IInteractable* Interaction = Cast<IInteractable>(CurrentInteraction))
+		{
+			Interaction->Interact();
+		}
+		else if (ICollectable* Collection = Cast<ICollectable>(CurrentInteraction))
+		{
+			SetCollectable(CurrentInteraction);
+			Collection->Collect();
+		}
 	}
-	else if (ICollectable* Collection = Cast<ICollectable>(CurrentInteraction))
-	{
-		SetCollectable(CurrentInteraction);
-		Collection->Collect();
-	}
-
 }
 

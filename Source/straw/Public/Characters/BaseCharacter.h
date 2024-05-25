@@ -13,6 +13,7 @@ class UDrawingAbilityComponent;
 class UNiagaraComponent;
 class ATraditionalKey;
 class ATraditionalOrnament;
+class UDialogueSubsystem;
 class AMainHUD;
 class UOrnamentOverlay;
 
@@ -89,6 +90,9 @@ private:
 
 	/* Rootable */
 	bool TraditionalOrnaments[4];
+
+	/* 서브시스템 */
+	UDialogueSubsystem* DialogueSubsystem;
 
 	/* UI */
 	AMainHUD* MainHUD;
