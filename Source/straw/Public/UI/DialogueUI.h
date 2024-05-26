@@ -51,6 +51,4 @@ private:
 	FString CurrentLine;
 	int CurrentLineCaret = 0;
 	bool bIsTyping = false;
-
-	FText EmptyString = FText::FromString("");
 };

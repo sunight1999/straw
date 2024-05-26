@@ -34,9 +34,30 @@ FQuestDetail* UQuestSubsystem::FindQuestDetail(const FName& ID) const
 
 void UQuestSubsystem::AddQuest(FName QuestID)
 {
+	if (QuestOverlay == nullptr)
+	{
+		FetchOverlay();
+	}
+
 	FQuestDetail* QuestDetail = FindQuestDetail(QuestID);
+	if (!QuestDetail)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("퀘스트 %s를 찾을 수 없습니다."), QuestID);
+		return;
+	}
+
 	FQuest* NewQuest = new FQuest(QuestDetail);
 	CurrentQuests.Add(NewQuest);
+
+	if (QuestDetail->bIsMain)
+	{
+		QuestOverlay->SetMainQuest(NewQuest);
+	}
+	else
+	{
+		QuestOverlay->AddSubQuest(NewQuest);
+	}
+
 	UpdateUI();
 }
 
@@ -67,7 +88,7 @@ void UQuestSubsystem::UpdateUI()
 	if (CurrentQuests.Num() > 0)
 	{
 		QuestOverlay->SetVisibility(ESlateVisibility::Visible);
-		QuestOverlay->SetQuest(CurrentQuests[0]);
+		QuestOverlay->Update();
 	}
 	else
 	{

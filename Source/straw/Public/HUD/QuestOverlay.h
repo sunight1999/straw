@@ -7,8 +7,10 @@
 #include "QuestOverlay.generated.h"
 
 class FQuest;
-class UTextBlock;
 class UImage;
+class UTextBlock;
+class UVerticalBox;
+class USubQuestUI;
 
 /**
  * 
@@ -19,15 +21,29 @@ class STRAW_API UQuestOverlay : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	void SetQuest(FQuest* Quest);
+	void SetMainQuest(FQuest* Quest);
+	void AddSubQuest(FQuest* SubQuest);
+	void RemoveSubQuest(FQuest* SubQuest);
+
+	void Update();
 
 private:
+	/* 메인 퀘스트 */
 	UPROPERTY(meta = (BindWidget))
-	UTextBlock* QuestTitleText;
+	UImage* MainSymbolImage;
 
 	UPROPERTY(meta = (BindWidget))
-	UTextBlock* QuestDescText;
+	UTextBlock* MainQuestTitleText;
 
 	UPROPERTY(meta = (BindWidget))
-	UTextBlock* QuestQuantityText;
+	UTextBlock* MainQuestDescText;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* MainQuestQuantityText;
+
+	/* 서브 퀘스트 */
+	UPROPERTY(meta = (BindWidget))
+	UVerticalBox* SubQuestVBox;
+
+	FQuest* MainQuest;
 };

@@ -13,8 +13,8 @@ void UDialogueUI::Type(FString Line)
 	UWorld* World = GetWorld();
 	World->GetTimerManager().SetTimer(TypeTimer, this, &UDialogueUI::Type, TypeSpeed, true, 0.f);
 
-	NameText->SetText(EmptyString);
-	DialogueText->SetText(EmptyString);
+	NameText->SetText(FText::GetEmpty());
+	DialogueText->SetText(FText::GetEmpty());
 }
 
 void UDialogueUI::Type()
