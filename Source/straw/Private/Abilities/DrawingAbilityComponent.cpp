@@ -5,10 +5,12 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
-#include "Abilities/DrawingActualizer.h"
 #include "Components/BoxComponent.h"
 #include "NiagaraComponent.h"
+
+#include "Abilities/DrawingActualizer.h"
 #include "Characters/BaseCharacter.h"
+#include "Interacts/Chapter1/Hanji.h"
 
 UDrawingAbilityComponent::UDrawingAbilityComponent()
 {
@@ -17,16 +19,6 @@ UDrawingAbilityComponent::UDrawingAbilityComponent()
 	AbilityGainedEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("AbilityGainedEffect"));
 	AbilityGainedEffect->bAutoActivate = false;
 
-	DrawingCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("DrawingCollision"));
-	DrawingCollision->SetBoxExtent(FVector(1.f, 300.f, 100.f));
-	DrawingCollision->SetRelativeLocation(FVector(80.f, 0.f, 80.f));
-
-	// 현재 collision channel 설정이 안 됨
-	DrawingCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
-	DrawingCollision->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Block);
-	DrawingCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	DrawingCollision->bHiddenInGame = true;
-	
 	SplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("Spline"));
 
 	ActualizedEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ActualizedEffect"));
@@ -69,17 +61,6 @@ void UDrawingAbilityComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 /// </summary>
 void UDrawingAbilityComponent::StartDrawing()
 {
-	// Drawing Collision 위치 및 회전값 설정
-	FRotator CameraRotation;
-	const FVector CameraForwardVector = OwnerCharacter->GetCameraForwardVector(&CameraRotation, true);
-	FVector NewLocation = OwnerCharacter->GetActorLocation() + CameraForwardVector * DrawingCollisionDistance;
-	NewLocation.Z += DrawingCollisionHeight;
-	CameraRotation.Pitch = 0.f;
-
-	DrawingCollision->SetWorldLocationAndRotation(NewLocation, CameraRotation);
-	DrawingCollision->SetVisibility(true);
-	DrawingCollision->bHiddenInGame = false;
-
 	// 이전 Drawing 정보 초기화
 	SplineComponent->ClearSplinePoints();
 
@@ -99,44 +80,6 @@ void UDrawingAbilityComponent::StartDrawing()
 }
 
 /// <summary>
-/// 선을 구성할 새로운 점 추가, 현재 카메라 Rotation 방향으로 Line Trace를 수행해 Drawing Collision과 충돌한 지점을 새로운 점으로 지정
-/// </summary>
-void UDrawingAbilityComponent::AddPoint()
-{
-	if (!bDrawByDistance)
-	{
-		if (DrawingTick > DrawingInterval)
-		{
-			FHitResult OutHit;
-
-			FVector StartPosition = OwnerCharacter->GetActorLocation();
-			FVector EndPosition = StartPosition + DrawingCollisionDistance * 10.f * OwnerCharacter->GetCameraForwardVector(nullptr, true);
-
-			if (GetWorld()->LineTraceSingleByChannel(OutHit, StartPosition, EndPosition, ECC_GameTraceChannel1))
-			{
-				AddPoint(OutHit.ImpactPoint, true);
-			}
-		}
-	}
-	else
-	{
-		FHitResult OutHit;
-
-		FVector StartPosition = OwnerCharacter->GetActorLocation();
-		FVector EndPosition = StartPosition + DrawingCollisionDistance * 10.f * OwnerCharacter->GetCameraForwardVector(nullptr, true);
-
-		if (GetWorld()->LineTraceSingleByChannel(OutHit, StartPosition, EndPosition, ECC_GameTraceChannel1))
-		{
-			if (SplineComponent->GetNumberOfSplinePoints() == 0 || FVector::DistSquared(PreviousPoint, OutHit.ImpactPoint) >= DrawingGap * DrawingGap)
-			{
-				AddPoint(OutHit.ImpactPoint, true);
-				PreviousPoint = OutHit.ImpactPoint;
-			}
-		}
-	}
-}
-
-/// <summary>
 /// Point 추가 간격과 별개로 ImpactPoint를 계속 반환하여 이펙트 Point를 지정할 수 있도록 함
 /// </summary>
 /// <param name="OutImpactPoint">Drawing Collision 충돌 지점</param>
@@ -146,10 +89,16 @@ bool UDrawingAbilityComponent::AddPointDirty(FVector& OutImpactPoint)
 	FHitResult OutHit;
 
 	FVector StartPosition = OwnerCharacter->GetActorLocation();
-	FVector EndPosition = StartPosition + DrawingCollisionDistance * 10.f * OwnerCharacter->GetCameraForwardVector(nullptr, true);
+	FVector EndPosition = StartPosition + DrawingDistance * OwnerCharacter->GetCameraForwardVector(nullptr, true);
 
 	if (GetWorld()->LineTraceSingleByChannel(OutHit, StartPosition, EndPosition, ECC_GameTraceChannel1))
 	{
+		if (!DrawingCollision)
+		{
+			Hanji = Cast<AHanji>(OutHit.GetActor());
+			DrawingCollision = Cast<UBoxComponent>(OutHit.Component);
+		}
+
 		OutImpactPoint = OutHit.ImpactPoint;
 
 		if (!bDrawByDistance)
@@ -199,10 +148,16 @@ void UDrawingAbilityComponent::AddPoint(FVector Point, bool bForceDraw)
 /// </summary>
 void UDrawingAbilityComponent::EndDrawing()
 {
-	DrawingCollision->SetVisibility(false);
-	DrawingCollision->bHiddenInGame = true;
 	bDrawing = false;
 	
+	if (!DrawingCollision || !Hanji)
+	{
+		Hanji = nullptr;
+		DrawingCollision = nullptr;
+
+		return;
+	}
+
 	// DrawingActualizer에 선 버텍스 정보를 전달해 오브젝트 생성 요청
 	ADrawingActualizer* DrawingActualizer = GetWorld()->SpawnActor<ADrawingActualizer>(ADrawingActualizer::StaticClass(), FVector::ZeroVector, DrawingCollision->GetComponentRotation());
 	FVector CenterPosition = DrawingActualizer->Actualize2D(SplinePoints, DrawingCollision->Bounds.GetBox(), DrawingCollision->GetComponentRotation(), ActualizedObjectThickness, ActualizedObjectMaterial);
@@ -210,6 +165,12 @@ void UDrawingAbilityComponent::EndDrawing()
 	ActualizedEffect->DeactivateImmediate();
 	ActualizedEffect->SetWorldLocation(CenterPosition);
 	ActualizedEffect->Activate();
+
+	Hanji->SetTarget(DrawingActualizer);
+	Hanji->Play();
+
+	Hanji = nullptr;
+	DrawingCollision = nullptr;
 }
 
 /// <summary>

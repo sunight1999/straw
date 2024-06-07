@@ -16,7 +16,6 @@ class STRAW_API ADrawingActualizer : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ADrawingActualizer();
-	virtual void Tick(float DeltaTime) override;
 
 	FVector Actualize2D(TArray<FVector> DrawingVertices, FBox DrawingPlaneBox, FRotator DrawingPlaneRotation, float ActualizationThickness, UMaterialInterface* MeshMaterial);
 

@@ -11,13 +11,14 @@
 ADrawingActualizer::ADrawingActualizer()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	ProcMeshComponent = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("ProcMeshComponent"));
 	ProcMeshComponent->bUseComplexAsSimpleCollision = false;
 	ProcMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	ProcMeshComponent->SetSimulatePhysics(true);
 	ProcMeshComponent->SetMassScale(NAME_None, 1000.f);
+	RootComponent = ProcMeshComponent;
 
 	UVs.Add(FVector2D(0, 0));
 	UVs.Add(FVector2D(0, 1));
@@ -29,13 +30,6 @@ ADrawingActualizer::ADrawingActualizer()
 void ADrawingActualizer::BeginPlay()
 {
 	Super::BeginPlay();
-
-}
-
-// Called every frame
-void ADrawingActualizer::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 
 }
 
@@ -118,11 +112,11 @@ FVector ADrawingActualizer::Actualize2D(TArray<FVector> DrawingVertices, FBox Dr
 	}
 	*/
 
-	// 3. 들로네 삼각분할로 얻은 면 정보에 두께 값(x축)만 더해 뒷면 mesh 정보 추가
+	// 3. 들로네 삼각분할로 얻은 면 정보에 두께 값(z축)만 더해 뒷면 mesh 정보 추가
 	int32 OriginVerticesNum = Vertices.Num();
 	for (int i = 0; i < OriginVerticesNum; i++)
 	{
-		Vertices.Add(FVector(Vertices[i].X + ActualizationThickness, Vertices[i].Y, Vertices[i].Z));
+		Vertices.Add(FVector(Vertices[i].X, Vertices[i].Y, Vertices[i].Z + ActualizationThickness));
 	}
 
 	int32 OriginTriangleIndicesNum = Triangles.Num();
@@ -151,14 +145,31 @@ FVector ADrawingActualizer::Actualize2D(TArray<FVector> DrawingVertices, FBox Dr
 	Triangles.Add(OriginVerticesNum * 2 - 1);
 	Triangles.Add(0);
 
+	// 액터(DrawingActualizer)의 위치가 (0, 0, 0)이기 때문에 생성된 ProcMesh의 피벗도 (0, 0, 0)이 되어버림
+	// 이 문제를 해결하기 위해 ProcMesh의 위치를 (0, 0, 0)으로 옮기고, 액터 자체를 원래의 위치로 되돌리도록 함
+	FVector Center = FVector::ZeroVector;
+	for (FVector Vertex : Vertices)
+	{
+		Center += Vertex;
+	}
+
+	Center /= Vertices.Num();
+
+	for (int i = 0; i < Vertices.Num(); i++)
+	{
+		Vertices[i] -= Center;
+	}
+
 	ProcMeshComponent->CreateMeshSection(0, Vertices, Triangles, TArray<FVector>(), UVs, TArray<FColor>(), TArray<FProcMeshTangent>(), true);
 	ProcMeshComponent->AddCollisionConvexMesh(Vertices);
 	ProcMeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECollisionResponse::ECR_Block);
+
+	SetActorLocation(Center);
 
 	if (Material)
 	{
 		ProcMeshComponent->SetMaterial(0, Material);
 	}
 
-	return ProcMeshComponent->GetCenterOfMass();
+	return Center;
 }

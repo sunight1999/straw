@@ -13,6 +13,7 @@ class USplineMeshComponent;
 class UBoxComponent;
 class UNiagaraComponent;
 class ABaseCharacter;
+class AHanji;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class STRAW_API UDrawingAbilityComponent : public UActorComponent
@@ -25,7 +26,6 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void StartDrawing();
-	void AddPoint();
 	bool AddPointDirty(FVector& OutImpactPoint);
 	void AddPoint(FVector Point, bool bForceDraw = false);
 	void EndDrawing();
@@ -44,15 +44,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Drawing Ability")
 	bool bDrawByDistance = true;
-
-	UPROPERTY(EditAnywhere, Category = "Drawing Ability")
-	UBoxComponent* DrawingCollision;
-
-	UPROPERTY(EditAnywhere, Category = "Drawing Ability")
-	float DrawingCollisionDistance = 150.f;
-
-	UPROPERTY(EditAnywhere, Category = "Drawing Ability")
-	float DrawingCollisionHeight = 130.f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Drawing Ability", Meta = (AllowPrivateAccess = "true"))
 	USplineComponent* SplineComponent;
@@ -74,6 +65,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Drawing Ability")
 	float ActualizedObjectThickness = 30.f;
 
+	UPROPERTY(EditAnywhere, Category = "Drawing Ability")
+	float DrawingDistance = 300.f;
+
 	// bDrawByDistance가 false일 때만 사용
 	UPROPERTY(EditAnywhere, Category = "Drawing Ability")
 	float DrawingInterval = 0.04f;
@@ -84,9 +78,9 @@ private:
 	float DrawingGap = 15.f;
 	FVector PreviousPoint;
 
+	AHanji* Hanji = nullptr;
+	UBoxComponent* DrawingCollision = nullptr;
 	bool bDrawing;
 
 	ABaseCharacter* OwnerCharacter;	// 카메라 회전 값을 가져올 때 사용할 캐릭터 포인터 캐싱
-	//UPROPERTY(VisibleAnywhere, Category = "Drawing Ability")
-	//UDecalComponent* CircleDecal;
 };
