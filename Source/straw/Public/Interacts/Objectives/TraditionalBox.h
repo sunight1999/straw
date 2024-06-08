@@ -9,6 +9,8 @@
 
 class ATraditionalKey;
 class ATraditionalOrnament;
+class ULockCheckUI;
+class ULockCheckSubsystem;
 
 /**
  * 
@@ -27,6 +29,8 @@ protected:
 	void BeginPlay() override;
 
 private:
+	void HandleUnlock(bool bResult);
+
 	UPROPERTY(EditAnywhere, Category = "TraditionalBox")
 	USkeletalMeshComponent* SkeletalMesh;
 
@@ -38,4 +42,7 @@ private:
 
 	ATraditionalOrnament* TraditionalOrnament;
 	bool bIsUnlocked = false;
+
+	ATraditionalKey* CurrentKey = nullptr;
+	ULockCheckSubsystem* LockCheckSubsystem;
 };

@@ -65,6 +65,11 @@ void ABasicInteraction::EndOverlap()
 	}
 }
 
+void ABasicInteraction::BeginInteraction()
+{
+	OverlapBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+}
+
 /// <summary>
 /// Collision Box와 상호작용 가능 UI를 비활성화
 /// </summary>

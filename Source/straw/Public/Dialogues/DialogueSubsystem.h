@@ -81,6 +81,7 @@ FORCEINLINE FDialogue* UDialogueSubsystem::StartDialogue(FName DialogueID, UserC
 
 	FDialogue* Dialogue = StartDialogue(DialogueID);
 	
+	CurrentDialogueDelegate.Unbind();
 	CurrentDialogueDelegate.BindUObject(Object, DialogueCallback);
 
 	return Dialogue;

@@ -17,6 +17,7 @@
 #include "Interacts/Objectives/TraditionalOrnament.h"
 #include "Quests/QuestSubsystem.h"
 #include "Dialogues/DialogueSubsystem.h"
+#include "SubGame/LockCheckSubsystem.h"
 #include "HUD/MainHUD.h"
 #include "HUD/OrnamentOverlay.h"
 
@@ -72,6 +73,7 @@ void ABaseCharacter::BeginPlay()
 		}
 
 		DialogueSubsystem = GameInstance->GetSubsystem<UDialogueSubsystem>();
+		LockCheckSubsystem = GameInstance->GetSubsystem<ULockCheckSubsystem>();
 	}
 }
 
@@ -405,6 +407,10 @@ void ABaseCharacter::Action()
 	if (DialogueSubsystem->IsDisplaying())
 	{
 		DialogueSubsystem->Next();
+	}
+	else if (LockCheckSubsystem->IsPlaying())
+	{
+		LockCheckSubsystem->Check();
 	}
 	else
 	{

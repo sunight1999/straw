@@ -14,6 +14,7 @@ class UNiagaraComponent;
 class ATraditionalKey;
 class ATraditionalOrnament;
 class UDialogueSubsystem;
+class ULockCheckSubsystem;
 class AMainHUD;
 class UOrnamentOverlay;
 
@@ -93,6 +94,7 @@ private:
 
 	/* 서브시스템 */
 	UDialogueSubsystem* DialogueSubsystem;
+	ULockCheckSubsystem* LockCheckSubsystem;
 
 	/* UI */
 	AMainHUD* MainHUD;

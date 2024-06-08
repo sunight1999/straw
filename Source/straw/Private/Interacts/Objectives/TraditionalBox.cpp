@@ -3,10 +3,12 @@
 
 #include "Interacts/Objectives/TraditionalBox.h"
 #include "Components/WidgetComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "Interacts/Objectives/TraditionalKey.h"
 #include "Interacts/Objectives/TraditionalOrnament.h"
 #include "Characters/BaseCharacter.h"
+#include "SubGame/LockCheckSubsystem.h"
 
 ATraditionalBox::ATraditionalBox()
 {
@@ -24,6 +26,19 @@ void ATraditionalBox::BeginPlay()
 
 	TraditionalOrnament = GetWorld()->SpawnActor<ATraditionalOrnament>(OrnamentClass, SkeletalMesh->GetComponentLocation(), GetActorRotation());
 	TraditionalOrnament->SetActorHiddenInGame(true);
+
+	UGameInstance* GameInstance = UGameplayStatics::GetGameInstance(GetWorld());
+	if (!GameInstance)
+	{
+		return;
+	}
+
+	// 퀘스트 서브시스템 로드
+	LockCheckSubsystem = GameInstance->GetSubsystem<ULockCheckSubsystem>();
+	if (!LockCheckSubsystem)
+	{
+		return;
+	}
 }
 
 void ATraditionalBox::Interact()
@@ -53,14 +68,23 @@ void ATraditionalBox::Unlock(ATraditionalKey* Key)
 {
 	if (Key->GetKeyID().Compare(KeyID) == 0)
 	{
-		bIsUnlocked = true;
-
 		StopInteraction();
 
+		CurrentKey = Key;
+		LockCheckSubsystem->StartLockCheck(this, &ATraditionalBox::HandleUnlock);
+	}
+}
+
+void ATraditionalBox::HandleUnlock(bool bResult)
+{
+	if (bResult)
+	{
+		bIsUnlocked = true;
+
 		// 열쇠 애니메이션 재생 후 Destroy
-		Key->Use(this);
+		CurrentKey->Use(this);
 		Player->UseTraditionalKey(KeyID);
-		
+
 		// 전통함 열리는 애니메이션 재생
 		SkeletalMesh->Play(false);
 
@@ -70,7 +94,13 @@ void ATraditionalBox::Unlock(ATraditionalKey* Key)
 		// 문양 조각 애니메이션 재생, 추후 playing과 loop를 true로 바꿔서 애니메이션 재생시키기 (현재 애니메이션이 없어 임시 코드 수행)
 		FVector TargetLocation = TraditionalOrnament->GetActorLocation();
 		TargetLocation.Z += 70.f;
-		
+
 		TraditionalOrnament->SetActorLocation(TargetLocation);
 	}
+	else
+	{
+		BeginInteraction();
+	}
+
+	CurrentKey = nullptr;
 }

@@ -5,6 +5,7 @@
 #include "HUD/QuestOverlay.h"
 #include "HUD/OrnamentOverlay.h"
 #include "UI/DialogueUI.h"
+#include "UI/SubGame/LockCheckUI.h"
 
 UQuestOverlay* AMainHUD::GetQuestOverlay() const
 {
@@ -19,6 +20,11 @@ UOrnamentOverlay* AMainHUD::GetOrnamentOverlay() const
 UDialogueUI* AMainHUD::GetDialogueUI() const
 {
 	return DialogueUI;
+}
+
+ULockCheckUI* AMainHUD::GetLockCheckUI() const
+{
+	return LockCheckUI;
 }
 
 void AMainHUD::BeginPlay()
@@ -42,6 +48,10 @@ void AMainHUD::BeginPlay()
 			DialogueUI = CreateWidget<UDialogueUI>(PlayerController, DialogueUIClass);
 			DialogueUI->AddToViewport();
 			DialogueUI->SetVisibility(ESlateVisibility::Hidden);
+
+			LockCheckUI = CreateWidget<ULockCheckUI>(PlayerController, LockCheckUIClass);
+			LockCheckUI->AddToViewport();
+			LockCheckUI->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
 }

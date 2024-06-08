@@ -32,6 +32,7 @@ protected:
 	virtual void OnBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	virtual void EndOverlap();
 
+	void BeginInteraction();
 	void StopInteraction();
 
 	UPROPERTY(VisibleAnywhere, Category = "BasicInteraction")
