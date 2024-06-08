@@ -12,27 +12,57 @@ void UMover::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponent
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (GetOwner())
+	if (BeginDelay && BeginDelay > DelayTick)
 	{
-		Move(DeltaTime);
-		Rotate(DeltaTime);
+		DelayTick += DeltaTime;
+	}
+	else
+	{
+		if (GetOwner())
+		{
+			Move(DeltaTime);
+			Rotate(DeltaTime);
+		}
 	}
 }
 
 void UMover::BeginPlay()
 {
 	Super::BeginPlay();
+
+	StartLocation = GetOwner()->GetActorLocation();
 }
 
 void UMover::Move(float DeltaTime)
 {
-	FVector TargetVector = FMath::VInterpTo(GetOwner()->GetActorLocation(), To, DeltaTime, Velocity);
-	GetOwner()->SetActorLocation(TargetVector);
+	if (ShouldReturn())
+	{
+		StartLocation += PlatformVelocity.GetSafeNormal() * MoveDistance;
+		GetOwner()->SetActorLocation(StartLocation);
+		PlatformVelocity *= -1;
+	}
+	else
+	{
+		FVector CurrentLocation = GetOwner()->GetActorLocation();
+		FVector TargetVector = FMath::VInterpTo(CurrentLocation, CurrentLocation + PlatformVelocity, DeltaTime, Velocity);
+
+		GetOwner()->SetActorLocation(TargetVector);
+	}
 }
 
 void UMover::Rotate(float DeltaTime)
 {
 	
+}
+
+bool UMover::ShouldReturn() const
+{
+	return GetDistanceMoved() > MoveDistance;
+}
+
+float UMover::GetDistanceMoved() const
+{
+	return FVector::Dist(StartLocation, GetOwner()->GetActorLocation());
 }
 
 

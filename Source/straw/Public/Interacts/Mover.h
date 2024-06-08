@@ -26,9 +26,21 @@ private:
 	virtual void Move(float DeltaTime);
 	virtual void Rotate(float DeltaTime);
 
-	UPROPERTY(EditAnyWhere, Category = "Mover")
-	FVector From;
+	bool ShouldReturn() const;
+	float GetDistanceMoved() const;
 
 	UPROPERTY(EditAnyWhere, Category = "Mover")
-	FVector To;
+	FVector PlatformVelocity;
+
+	UPROPERTY(EditAnyWhere, Category = "Mover")
+	float MoveDistance = 100.f;
+
+	UPROPERTY(EditAnyWhere, Category = "Mover")
+	float BeginDelay = 0.f;
+
+	UPROPERTY(EditAnyWhere, Category = "Mover")
+	bool bIsLooping = true;
+
+	FVector StartLocation;
+	float DelayTick = 0.f;
 };
