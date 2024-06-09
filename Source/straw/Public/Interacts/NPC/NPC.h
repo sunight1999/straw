@@ -32,7 +32,7 @@ protected:
 
 private:
 	UPROPERTY(EditAnywhere, Category = "NPC")
-	UStaticMeshComponent* StaticMesh; // 스켈레탈 메쉬로 변경 예정
+	USkeletalMeshComponent* SkeletalMesh; // 스켈레탈 메쉬로 변경 예정
 
 	UPROPERTY(EditAnywhere, Category = "NPC")
 	TArray<FString> DialogueIDs;

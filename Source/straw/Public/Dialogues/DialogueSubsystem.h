@@ -47,10 +47,10 @@ class STRAW_API UDialogueSubsystem : public UGameInstanceSubsystem
 public:
 	UDialogueSubsystem();
 
-	FDialogue* StartDialogue(FName DialogueID);
+	FDialogue* StartDialogue(FString Name, FName DialogueID);
 
 	template<class UserClass>
-	FORCEINLINE FDialogue* StartDialogue(FName DialogueID, UserClass* Object, typename FDialogueLineDelegate::TMethodPtr<UserClass> DialogueCallback);
+	FORCEINLINE FDialogue* StartDialogue(FString Name, FName DialogueID, UserClass* Object, typename FDialogueLineDelegate::TMethodPtr<UserClass> DialogueCallback);
 
 	void EndDialogue();
 
@@ -69,17 +69,18 @@ private:
 	FDialogue* CurrentDialogue;
 	FDialogueLineDelegate CurrentDialogueDelegate;
 	int CurrentLineIndex = 0;
+	FString CurrentNPCName = "";
 };
 
 template<class UserClass>
-FORCEINLINE FDialogue* UDialogueSubsystem::StartDialogue(FName DialogueID, UserClass* Object, typename FDialogueLineDelegate::TMethodPtr<UserClass> DialogueCallback)
+FORCEINLINE FDialogue* UDialogueSubsystem::StartDialogue(FString Name, FName DialogueID, UserClass* Object, typename FDialogueLineDelegate::TMethodPtr<UserClass> DialogueCallback)
 {
 	if (bIsDisplaying)
 	{
 		return nullptr;
 	}
 
-	FDialogue* Dialogue = StartDialogue(DialogueID);
+	FDialogue* Dialogue = StartDialogue(Name, DialogueID);
 	
 	CurrentDialogueDelegate.Unbind();
 	CurrentDialogueDelegate.BindUObject(Object, DialogueCallback);

@@ -4,7 +4,7 @@
 #include "UI/DialogueUI.h"
 #include "Components/TextBlock.h"
 
-void UDialogueUI::Type(FString Line)
+void UDialogueUI::Type(FString Name, FString Line)
 {
 	CurrentLine = Line;
 	CurrentLineCaret = 0;
@@ -13,7 +13,7 @@ void UDialogueUI::Type(FString Line)
 	UWorld* World = GetWorld();
 	World->GetTimerManager().SetTimer(TypeTimer, this, &UDialogueUI::Type, TypeSpeed, true, 0.f);
 
-	NameText->SetText(FText::GetEmpty());
+	NameText->SetText(FText::FromString(Name));
 	DialogueText->SetText(FText::GetEmpty());
 }
 
@@ -30,4 +30,13 @@ void UDialogueUI::Type()
 
 		bIsTyping = false;
 	}
+}
+
+void UDialogueUI::TypeAtOnce()
+{
+	UWorld* World = GetWorld();
+	World->GetTimerManager().ClearTimer(TypeTimer);
+
+	DialogueText->SetText(FText::FromString(CurrentLine));
+	bIsTyping = false;
 }

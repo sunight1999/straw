@@ -13,8 +13,8 @@ ANPC::ANPC()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
-	StaticMesh->SetupAttachment(RootComponent);
+	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
+	SkeletalMesh->SetupAttachment(RootComponent);
 }
 
 void ANPC::BeginPlay()
@@ -22,7 +22,7 @@ void ANPC::BeginPlay()
 	Super::BeginPlay();
 
 	// 설정한 Mesh 크기에 맞춰 Interactable UI 위치 조정
-	RelocationInteractableWidget(StaticMesh);
+	RelocationInteractableWidget(SkeletalMesh);
 
 	UGameInstance* GameInstance = UGameplayStatics::GetGameInstance(GetWorld());
 	if (!GameInstance)
@@ -54,7 +54,7 @@ void ANPC::Talk()
 {
 	if (DialogueIDs.Num() > 0)
 	{
-		CurrentDialogue = DialogueSubsystem->StartDialogue(FName(DialogueIDs[0]), this, &ANPC::GiveQuest);
+		CurrentDialogue = DialogueSubsystem->StartDialogue(GetActorNameOrLabel(), FName(DialogueIDs[0]), this, &ANPC::GiveQuest);
 	}
 }
 

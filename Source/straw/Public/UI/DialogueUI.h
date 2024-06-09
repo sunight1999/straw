@@ -20,8 +20,9 @@ class STRAW_API UDialogueUI : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	void Type(FString Line);
+	void Type(FString Name, FString Line);
 	void Type();
+	void TypeAtOnce();
 
 	bool IsTyping() const { return bIsTyping; }
 

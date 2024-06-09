@@ -17,7 +17,7 @@ UDialogueSubsystem::UDialogueSubsystem()
 	}
 }
 
-FDialogue* UDialogueSubsystem::StartDialogue(FName DialogueID)
+FDialogue* UDialogueSubsystem::StartDialogue(FString Name, FName DialogueID)
 {
 	if (bIsDisplaying)
 	{
@@ -32,6 +32,7 @@ FDialogue* UDialogueSubsystem::StartDialogue(FName DialogueID)
 	bIsDisplaying = true;
 	DialogueWidget->SetVisibility(ESlateVisibility::Visible);
 
+	CurrentNPCName = Name;
 	CurrentDialogue = DialogueDataTable->FindRow<FDialogue>(DialogueID, FString(""));
 	if (!CurrentDialogue)
 	{
@@ -49,6 +50,7 @@ void UDialogueSubsystem::EndDialogue()
 	DialogueWidget->SetVisibility(ESlateVisibility::Hidden);
 	CurrentDialogue = nullptr;
 	CurrentLineIndex = 0;
+	CurrentNPCName = "";
 
 	if (CurrentDialogueDelegate.IsBound())
 	{
@@ -60,12 +62,16 @@ void UDialogueSubsystem::Next()
 {
 	if (DialogueWidget->IsTyping() || !CurrentDialogue)
 	{
+		DialogueWidget->TypeAtOnce();
 		return;
 	}
 
 	if (CurrentLineIndex < CurrentDialogue->Lines.Num())
 	{
-		DialogueWidget->Type(CurrentDialogue->Lines[CurrentLineIndex++].Line);
+		FDialogueLine CurrentLine = CurrentDialogue->Lines[CurrentLineIndex++];
+		FString Name = CurrentLine.bIsPlayer ? TEXT("나") : CurrentNPCName;
+
+		DialogueWidget->Type(Name, CurrentLine.Line);
 	}
 	else
 	{
