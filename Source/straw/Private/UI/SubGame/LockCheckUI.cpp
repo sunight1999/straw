@@ -49,8 +49,16 @@ bool ULockCheckUI::Check()
 	float CurrentCheckBarBeginAngle = LockCheckSlider->AngularOffset;
 	float CurrentCheckBarEndAngle = CurrentCheckBarBeginAngle + CurrentCheckBarWidth;
 	float CurrentArrowAngle = LockCheckArrowImage->GetRenderTransformAngle() + 180;
-
-	if (CurrentCheckBarBeginAngle <= CurrentArrowAngle && CurrentArrowAngle <= CurrentCheckBarEndAngle)
+	
+	// 정답 구간이 360도=0도를 포함하는 경우
+	if (CurrentCheckBarEndAngle > 360)
+	{
+		if (CurrentCheckBarBeginAngle <= CurrentArrowAngle || CurrentArrowAngle <= CurrentCheckBarEndAngle - 360)
+		{
+			return true;
+		}
+	}
+	else if (CurrentCheckBarBeginAngle <= CurrentArrowAngle && CurrentArrowAngle <= CurrentCheckBarEndAngle)
 	{
 		return true;
 	}
