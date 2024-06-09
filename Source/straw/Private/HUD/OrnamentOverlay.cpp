@@ -3,6 +3,7 @@
 
 #include "HUD/OrnamentOverlay.h"
 #include "Components/Image.h"
+#include "Components/TextBlock.h"
 
 #include "Interacts/Objectives/TraditionalOrnament.h"
 
@@ -14,6 +15,7 @@ bool UOrnamentOverlay::Initialize()
 	LeftBottomImage->SetVisibility(ESlateVisibility::Hidden);
 	RightBottomImage->SetVisibility(ESlateVisibility::Hidden);
 	RightTopImage->SetVisibility(ESlateVisibility::Hidden);
+	CountText->SetVisibility(ESlateVisibility::Hidden);
 
 	return true;
 }
@@ -65,5 +67,7 @@ void UOrnamentOverlay::SetOrnamentVisibility(EOrnamentPart OrnamentPart, bool In
 	if (PartImage)
 	{
 		PartImage->SetVisibility(SlateVisibility);
+		CountText->SetVisibility(ESlateVisibility::Visible);
+		CountText->SetText(FText::FromString(FString::Printf(TEXT("( %d / 4 )"), ++CurrentPieceNum)));
 	}
 }

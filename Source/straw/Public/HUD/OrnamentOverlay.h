@@ -7,6 +7,7 @@
 #include "OrnamentOverlay.generated.h"
 
 class UImage;
+class UTextBlock;
 enum class EOrnamentPart : uint8;
 
 /**
@@ -38,4 +39,9 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	UImage* RightTopImage;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* CountText;
+
+	int CurrentPieceNum = 0;
 };
