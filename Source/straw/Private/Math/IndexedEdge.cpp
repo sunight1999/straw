@@ -3,10 +3,12 @@
 
 #include "Math/IndexedEdge.h"
 
-IndexedEdge::IndexedEdge(const TArray<FVector2D>& Vertices, int32 InP1Index, int32 InP2Index) :
-	P1Index(InP1Index), P2Index(InP2Index), P1(Vertices[InP1Index]), P2(Vertices[InP2Index])
+IndexedEdge::IndexedEdge(const TArray<FVector2D>& Vertices, int32 InP1Index, int32 InP2Index)
 {
-
+	P1Index = InP1Index;
+	P2Index = InP2Index;
+	P1 = Vertices[InP1Index];
+	P2 = Vertices[InP2Index];
 }
 
 IndexedEdge::~IndexedEdge()

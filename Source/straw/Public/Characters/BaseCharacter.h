@@ -77,6 +77,9 @@ private:
 	UNiagaraComponent* AbilityEffectComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta = (AllowPrivateAccess = "true"))
+	UNiagaraComponent* AbilityReadyEffectComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta = (AllowPrivateAccess = "true"))
 	UDrawingAbilityComponent* DrawingAbilityComponent;
 
 	bool bReadyAbility = false;

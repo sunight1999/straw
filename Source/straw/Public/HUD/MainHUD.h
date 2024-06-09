@@ -25,6 +25,8 @@ public:
 	UDialogueUI* GetDialogueUI() const;
 	ULockCheckUI* GetLockCheckUI() const;
 
+	void SetCrosshairVisible(bool bVisible);
+
 protected:
 	virtual void BeginPlay() override;
 	
@@ -41,8 +43,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Main)
 	TSubclassOf<ULockCheckUI> LockCheckUIClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = Main)
+	TSubclassOf<UUserWidget> CrosshairUIClass;
+
 	UQuestOverlay* QuestOverlay;
 	UOrnamentOverlay* OrnamentOverlay;
 	UDialogueUI* DialogueUI;
 	ULockCheckUI* LockCheckUI;
+	UUserWidget* CrosshairUI;
 };

@@ -148,7 +148,7 @@ FVector ADrawingActualizer::Actualize2D(TArray<FVector> DrawingVertices, FBox Dr
 	// 액터(DrawingActualizer)의 위치가 (0, 0, 0)이기 때문에 생성된 ProcMesh의 피벗도 (0, 0, 0)이 되어버림
 	// 이 문제를 해결하기 위해 ProcMesh의 위치를 (0, 0, 0)으로 옮기고, 액터 자체를 원래의 위치로 되돌리도록 함
 	FVector Center = FVector::ZeroVector;
-	for (FVector Vertex : Vertices)
+	for (const FVector& Vertex : Vertices)
 	{
 		Center += Vertex;
 	}

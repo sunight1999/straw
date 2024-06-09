@@ -43,6 +43,11 @@ ABaseCharacter::ABaseCharacter()
 
 	AbilityEffectComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("AbilityEffectComponent"));
 	AbilityEffectComponent->bAutoActivate = false;
+	AbilityEffectComponent->SetupAttachment(GetRootComponent());
+
+	AbilityReadyEffectComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("AbilityReadyEffectComponent"));
+	AbilityReadyEffectComponent->bAutoActivate = false;
+	AbilityReadyEffectComponent->SetupAttachment(GetRootComponent());
 
 	DrawingAbilityComponent = CreateDefaultSubobject<UDrawingAbilityComponent>(TEXT("DrawingAbilityComponent"));
 
@@ -81,17 +86,22 @@ void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bReadyAbility && bUsingAbility)
+	if (bReadyAbility)
 	{
-		FVector ImpactPoint;
-		if (DrawingAbilityComponent->AddPointDirty(ImpactPoint))
+		AbilityReadyEffectComponent->SetVectorParameter(FName("UpdateLocation"), GetActorLocation());
+
+		if (bUsingAbility)
 		{
-			// 먹 이펙트 재생
-			if (!AbilityEffectComponent->IsActive() && AbilityEffectComponent->GetAsset())
+			FVector ImpactPoint;
+			if (DrawingAbilityComponent->AddPointDirty(ImpactPoint))
 			{
-				AbilityEffectComponent->Activate();
+				// 먹 이펙트 재생
+				if (!AbilityEffectComponent->IsActive() && AbilityEffectComponent->GetAsset())
+				{
+					AbilityEffectComponent->Activate();
+				}
+				AbilityEffectComponent->SetVariablePosition(FName("SpawnPosition"), ImpactPoint);
 			}
-			AbilityEffectComponent->SetVariablePosition(FName("SpawnPosition"), ImpactPoint);
 		}
 	}
 }
@@ -327,6 +337,7 @@ void ABaseCharacter::ReadyAbility()
 	if (!bReadyAbility)
 	{
 		// 3인칭에서 1인칭으로 변경
+		/*
 		if (auto MainMesh = Cast<USkeletalMeshComponent>(GetMesh()->GetDefaultSubobjectByName(FName("SkeletalMesh"))))
 		{
 			MainMesh->SetVisibility(false);
@@ -335,7 +346,11 @@ void ABaseCharacter::ReadyAbility()
 		//GetMesh()->SetVisibility(false);
 		OriginTargetArmLength = CameraArm->TargetArmLength;
 		CameraArm->TargetArmLength = 0.f;
+		*/
 	}
+
+	MainHUD->SetCrosshairVisible(true);
+	AbilityReadyEffectComponent->Activate();
 
 	bReadyAbility = true;
 	TryRelease();
@@ -353,8 +368,11 @@ void ABaseCharacter::EndReadyAbility()
 		EndUseAbility();
 	}
 
+	MainHUD->SetCrosshairVisible(false);
+	AbilityReadyEffectComponent->Deactivate();
 	bReadyAbility = false;
 
+	/*
 	if (auto MainMesh = Cast<USkeletalMeshComponent>(GetMesh()->GetDefaultSubobjectByName(FName("SkeletalMesh"))))
 	{
 		MainMesh->SetVisibility(true);
@@ -362,6 +380,7 @@ void ABaseCharacter::EndReadyAbility()
 
 	//GetMesh()->SetVisibility(true);
 	CameraArm->TargetArmLength = OriginTargetArmLength;
+	*/
 }
 
 void ABaseCharacter::UseAbility()

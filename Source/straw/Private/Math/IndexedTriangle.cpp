@@ -3,9 +3,15 @@
 
 #include "Math/IndexedTriangle.h"
 
-IndexedTriangle::IndexedTriangle(const TArray<FVector2D>& Vertices, int32 InP1Index, int32 InP2Index, int32 InP3Index, bool bCalculateCircumcircle) :
-	P1Index(InP1Index), P2Index(InP2Index), P3Index(InP3Index), P1(Vertices[InP1Index]), P2(Vertices[InP2Index]), P3(Vertices[InP3Index])
+IndexedTriangle::IndexedTriangle(const TArray<FVector2D>& Vertices, int32 InP1Index, int32 InP2Index, int32 InP3Index, bool bCalculateCircumcircle)
 {
+	P1Index = InP1Index;
+	P2Index = InP2Index;
+	P3Index = InP3Index;
+	P1 = Vertices[InP1Index];
+	P2 = Vertices[InP2Index];
+	P3 = Vertices[InP3Index];
+
 	if (bCalculateCircumcircle)
 	{
 		CalculateCircumcircle();

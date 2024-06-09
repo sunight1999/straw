@@ -27,6 +27,18 @@ ULockCheckUI* AMainHUD::GetLockCheckUI() const
 	return LockCheckUI;
 }
 
+void AMainHUD::SetCrosshairVisible(bool bVisible)
+{
+	if (bVisible)
+	{
+		CrosshairUI->SetVisibility(ESlateVisibility::Visible);
+	}
+	else
+	{
+		CrosshairUI->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
 void AMainHUD::BeginPlay()
 {
 	Super::BeginPlay();
@@ -52,6 +64,10 @@ void AMainHUD::BeginPlay()
 			LockCheckUI = CreateWidget<ULockCheckUI>(PlayerController, LockCheckUIClass);
 			LockCheckUI->AddToViewport();
 			LockCheckUI->SetVisibility(ESlateVisibility::Hidden);
+
+			CrosshairUI = CreateWidget<UUserWidget>(PlayerController, CrosshairUIClass);
+			CrosshairUI->AddToViewport();
+			CrosshairUI->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
 }
